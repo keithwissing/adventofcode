@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-def find_floor(input):
+def find_floor(puzzle_input):
     """
     >>> find_floor("(())")
     0
@@ -21,11 +21,11 @@ def find_floor(input):
     >>> find_floor(")())())")
     -3
     """
-    up = input.count('(')
-    down = input.count(')')
+    up = puzzle_input.count('(')
+    down = puzzle_input.count(')')
     print up - down
 
-def basement(input):
+def basement(puzzle_input):
     """
     >>> basement(")")
     1
@@ -34,18 +34,18 @@ def basement(input):
     """
     floor = 0
     pos = 0
-    while pos < len(input):
-        if input[pos] == '(' : floor = floor + 1
-        if input[pos] == ')' : floor = floor - 1
+    while pos < len(puzzle_input):
+        if puzzle_input[pos] == '(': floor = floor + 1
+        if puzzle_input[pos] == ')': floor = floor - 1
         if floor == -1:
             print pos+1
             break
         pos = pos + 1
 
 def main():
-    input = open("input.txt").read()
-    find_floor(input)
-    basement(input)
+    puzzle_input = open("input.txt").read()
+    find_floor(puzzle_input)
+    basement(puzzle_input)
 
 if __name__ == '__main__':
     import doctest

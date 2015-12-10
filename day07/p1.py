@@ -5,7 +5,7 @@ state = {}
 def has_signal(wire):
     return wire.isdigit() or wire in state.keys()
 
-def set_signal(wire,signal):
+def set_signal(wire, signal):
     state[wire] = signal
 
 def get_signal(wire):
@@ -16,7 +16,7 @@ def get_signal(wire):
 
 def once_through(lines):
     for line in lines:
-        [left,right] = line.split(" -> ")
+        [left, right] = line.split(" -> ")
         if not has_signal(right):
             tokens = left.split()
             if len(tokens) == 1: # assignment
@@ -24,7 +24,7 @@ def once_through(lines):
                     state[right] = get_signal(tokens[0])
             elif len(tokens) == 2: # NOT
                 if has_signal(tokens[1]):
-                    state[right] = ( ~ get_signal(tokens[1]) ) & 0xffff
+                    state[right] = (~ get_signal(tokens[1])) & 0xffff
             else:
                 if tokens[1] == "AND":
                     if has_signal(tokens[0]) and has_signal(tokens[2]):
@@ -34,10 +34,10 @@ def once_through(lines):
                         state[right] = get_signal(tokens[0]) | get_signal(tokens[2])
                 if tokens[1] == "LSHIFT":
                     if has_signal(tokens[0]):
-                        state[right] = ( get_signal(tokens[0]) << int(tokens[2]) ) & 0xffff
+                        state[right] = (get_signal(tokens[0]) << int(tokens[2])) & 0xffff
                 if tokens[1] == "RSHIFT":
                     if has_signal(tokens[0]):
-                        state[right] = ( get_signal(tokens[0]) >> int(tokens[2]) ) & 0xffff
+                        state[right] = (get_signal(tokens[0]) >> int(tokens[2])) & 0xffff
 
 def run(lines):
     last = -1
@@ -75,14 +75,14 @@ def run_and_print_all(lines):
 def main():
     global state
 
-    input = [line.strip() for line in open('input.txt')]
+    puzzle_input = [line.strip() for line in open('input.txt')]
 
     state = {}
-    run(input)
+    run(puzzle_input)
     print state['a']
 
-    state = { 'b' : state['a'] }
-    run(input)
+    state = {'b' : state['a']}
+    run(puzzle_input)
     print state['a']
 
 if __name__ == '__main__':

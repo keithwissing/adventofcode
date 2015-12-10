@@ -18,10 +18,10 @@ def look_and_say_super_slow(line):
     # This implementation is laughably slow, but it was fun to see how bad it is.
     out = ""
     while len(line):
-        next = line[0]
+        char = line[0]
         clen = len(line)
-        line = line.lstrip(next)
-        out = out+str(clen-len(line))+next
+        line = line.lstrip(char)
+        out = out+str(clen-len(line))+char
     return out
 
 def look_and_say(line):
@@ -50,11 +50,11 @@ def look_and_say(line):
     return "".join(out)
 
 def main2():
-    input = "1113122113"
-    for count in range(1,51):
-        input = look_and_say(input)
-        if count in [ 40, 50 ]:
-            print count, len(input)
+    puzzle_input = "1113122113"
+    for count in range(1, 51):
+        puzzle_input = look_and_say(puzzle_input)
+        if count in [40, 50]:
+            print count, len(puzzle_input)
 
 def main():
     time = timeit.timeit(main2, number=1)

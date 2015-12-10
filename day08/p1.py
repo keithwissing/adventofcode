@@ -51,9 +51,9 @@ def part2(lines):
     return tmlen - tlen
 
 def main():
-    input = [line.strip() for line in open('input.txt')]
-    print string_size_difference(input)
-    print part2(input)
+    puzzle_input = [line.strip() for line in open('input.txt')]
+    print string_size_difference(puzzle_input)
+    print part2(puzzle_input)
 
 if __name__ == '__main__':
     import doctest
