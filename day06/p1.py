@@ -18,7 +18,7 @@ def p2toff(old):
 def p2toggle(old):
     return old + 2
 
-class Lights():
+class Lights(object):
     def __init__(self):
         self.board = [[0 for x in range(1000)] for x in range(1000)]
         #self.functions = { 'on' : p1ton, 'off' : p1toff, 'toggle' : p1toggle }
