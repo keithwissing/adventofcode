@@ -45,11 +45,16 @@ def inverse_captcha_skip(puzzle_input, skip):
             result = result + int(puzzle_input[x])
     return result
 
+def inverse_captcha_fun(puzzle_input, skip):
+    return sum([int(x) for i,x in enumerate(puzzle_input[:]) if x == puzzle_input[(i+skip)%len(puzzle_input)]])
+
 def main():
     puzzle_input = open("day01_input.txt").read().rstrip()
     print "Part 1 Answer", inverse_captcha(puzzle_input)
     print "Part 1 Answer", inverse_captcha_skip(puzzle_input, 1)
+    print "Part 1 Answer", inverse_captcha_fun(puzzle_input, 1)
     print "Part 2 Answer", inverse_captcha_skip(puzzle_input, len(puzzle_input)/2)
+    print "Part 2 Answer", inverse_captcha_fun(puzzle_input, len(puzzle_input)/2)
 
 if __name__ == '__main__':
     import doctest
