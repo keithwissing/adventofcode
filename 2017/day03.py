@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import math
+
 def move_steps(puzzle_input):
     """
     >>> move_steps(1)
@@ -12,12 +14,10 @@ def move_steps(puzzle_input):
     31
     """
     puzzle_input = int(puzzle_input)
-    result = 0
     if puzzle_input == 1:
         return 0
-    l = 1
-    while l**2 < puzzle_input:
-        l += 2
+    l = int(math.floor(math.sqrt(puzzle_input-1)))
+    l = l + l % 2 + 1
     d = l**2 - puzzle_input
     return l/2 + abs((d % (l-1)) - l/2)
 
