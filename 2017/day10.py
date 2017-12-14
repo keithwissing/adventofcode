@@ -4,11 +4,17 @@ def reverse_op(data, pos, length):
     """
     >>> reverse_op([0, 1, 2, 3, 4], 0, 3)
     [2, 1, 0, 3, 4]
+    >>> reverse_op([0, 1, 2, 3, 4], 3, 4)
+    [4, 3, 2, 1, 0]
+    >>> reverse_op([0, 1, 2, 3, 4, 5], 3, 4)
+    [3, 1, 2, 0, 5, 4]
     """
-    next = data[:]
-    for x in range(length):
-        next[(pos+x)%len(data)] = data[(pos+length-x-1)%len(data)]
-    return next
+    if pos+length < len(data):
+        return data[:pos] + list(reversed(data[pos:pos+length])) + data[pos+length:]
+    retval = data[:]
+    for step in range(length):
+        retval[(pos+step)%len(data)] = data[(pos+length-step-1)%len(data)]
+    return retval
 
 def run_sequence(size, sequence):
     """
@@ -45,10 +51,7 @@ def input_to_sequence(puzzle_input):
     return [ord(x) for x in puzzle_input] + [17, 31, 73, 47, 23]
 
 def sparse_to_dense(data):
-    out = []
-    for pos in range(16):
-        out.append(reduce(lambda x,y: x^y, data[pos*16:pos*16+16]))
-    return out
+    return [reduce(lambda x, y: x^y, data[pos*16:pos*16+16]) for pos in range(16)]
 
 def dense_to_hex(dense):
     return "".join(["%0.2x" % x for x in dense])
