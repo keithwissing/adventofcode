@@ -11,28 +11,13 @@ def generate_hex_grid(puzzle_input):
         grid.append(day10.part2("%s-%d" % (puzzle_input, row)))
     return grid
 
-def hextobin(hex):
+def hextobin(hexstring):
     """
     This is disgusting, but it was fast to write
     >>> hextobin("2")
     '0010'
     """
-    return hex.replace("0", "0000") \
-    .replace("1", "0001") \
-    .replace("2", "0010") \
-    .replace("3", "0011") \
-    .replace("4", "0100") \
-    .replace("5", "0101") \
-    .replace("6", "0110") \
-    .replace("7", "0111") \
-    .replace("8", "1000") \
-    .replace("9", "1001") \
-    .replace("a", "1010") \
-    .replace("b", "1011") \
-    .replace("c", "1100") \
-    .replace("d", "1101") \
-    .replace("e", "1110") \
-    .replace("f", "1111")
+    return "".join(["{0:04b}".format(int(x, 16)) for x in hexstring])
 
 def generate_bin_grid(puzzle_input):
     hexgrid = generate_hex_grid(puzzle_input)
