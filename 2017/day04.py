@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def is_valid_one(line):
     """
     >>> is_valid_one("aa bb cc dd ee")
@@ -41,9 +43,9 @@ def is_valid_two(line):
     return max([words.count(x) for x in words]) == 1
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day04_input.txt")]
-    print "Part 1 Answer", count_valid_passphrases(puzzle_input, is_valid_one)
-    print "Part 2 Answer", count_valid_passphrases(puzzle_input, is_valid_two)
+    puzzle_input = adventofcode.read_input(4)
+    adventofcode.answer(1, 451, count_valid_passphrases(puzzle_input, is_valid_one))
+    adventofcode.answer(2, 223, count_valid_passphrases(puzzle_input, is_valid_two))
 
 if __name__ == '__main__':
     import doctest

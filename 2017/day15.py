@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def parse_input_line(line):
     """
     >>> parse_input_line("Generator A starts with 634")
@@ -58,10 +60,10 @@ def part2(seeds):
     return count
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day15_input.txt")]
+    puzzle_input = adventofcode.read_input(15)
     seeds = [parse_input_line(x) for x in puzzle_input]
-    print "Part 1 Answer", part1(seeds)
-    print "Part 2 Answer", part2(seeds)
+    adventofcode.answer(1, 573, part1(seeds))
+    adventofcode.answer(2, 294, part2(seeds))
 
 if __name__ == '__main__':
     import doctest

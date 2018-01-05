@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def input_to_dict(lines):
     """
     >>> input_to_dict(["..#", "#..", "..."])
@@ -81,13 +83,9 @@ def part2(lines):
     return grid.get_infection_count()
 
 def main():
-    lines = [line.rstrip('\n') for line in open("day22_input.txt")]
-    a1 = part1(lines)
-    print "Part 1 Answer", a1
-    assert a1 == 5462
-    a2 = part2(lines)
-    print "Part 2 Answer", a2
-    assert a2 == 2512135
+    lines = adventofcode.read_input(22)
+    adventofcode.answer(1, 5462, part1(lines))
+    adventofcode.answer(2, 2512135, part2(lines))
 
 if __name__ == '__main__':
     import doctest

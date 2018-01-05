@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def parse_input_line(line):
     """
     >>> parse_input_line("2 <-> 0, 3, 4")
@@ -45,10 +47,10 @@ def part2(pipes):
     return groups
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day12_input.txt")]
+    puzzle_input = adventofcode.read_input(12)
     pipes = [parse_input_line(x) for x in puzzle_input]
-    print "Part 1 Answer", part1(pipes)
-    print "Part 2 Answer", part2(pipes)
+    adventofcode.answer(1, 378, part1(pipes))
+    adventofcode.answer(2, 204, part2(pipes))
 
 if __name__ == '__main__':
     import doctest

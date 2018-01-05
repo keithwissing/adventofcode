@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import adventofcode
 from collections import namedtuple
 
 Instruction = namedtuple('Instruction', 'register op arg check compare val')
@@ -51,10 +52,10 @@ def part2(instructions):
     return mv
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day08_input.txt")]
+    puzzle_input = adventofcode.read_input(8)
     instructions = [parse_input_line(x) for x in puzzle_input]
-    print "Part 1 Answer", part1(instructions)
-    print "Part 2 Answer", part2(instructions)
+    adventofcode.answer(1, 6343, part1(instructions))
+    adventofcode.answer(2, 7184, part2(instructions))
 
 if __name__ == '__main__':
     import doctest

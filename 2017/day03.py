@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import adventofcode
 import math
 import itertools
 
@@ -107,10 +108,10 @@ def value(known, pos):
     return sum([known.get((dx, dy), 0) for (dx, dy) in itertools.product(range(x-1, x+2), range(y-1, y+2))])
 
 def main():
-    puzzle_input = open("day03_input.txt").read().rstrip()
-    print "Part 1 Answer", move_steps(puzzle_input)
-    print "Part 1 Answer", move_steps_2(puzzle_input)
-    print "Part 2 Answer", part2(puzzle_input)
+    puzzle_input = adventofcode.read_input(3)
+    adventofcode.answer(1, 475, move_steps(puzzle_input))
+    adventofcode.answer(1, 475, move_steps_2(puzzle_input))
+    adventofcode.answer(2, 279138, part2(puzzle_input))
 
 if __name__ == '__main__':
     import doctest

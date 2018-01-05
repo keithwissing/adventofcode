@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def escape_one(instr):
     """
     >>> escape_one([0, 3, 0, 1, -3])
@@ -28,9 +30,9 @@ def escape_two(instr):
     return count
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day05_input.txt")]
-    print "Part 1 Answer", escape_one([int(x) for x in puzzle_input])
-    print "Part 2 Answer", escape_two([int(x) for x in puzzle_input])
+    puzzle_input = adventofcode.read_input(5)
+    adventofcode.answer(1, 360603, escape_one([int(x) for x in puzzle_input]))
+    adventofcode.answer(2, 25347697, escape_two([int(x) for x in puzzle_input]))
 
 if __name__ == '__main__':
     import doctest

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def reverse_op(data, pos, length):
     """
     >>> reverse_op([0, 1, 2, 3, 4], 0, 3)
@@ -71,9 +73,9 @@ def part2(puzzle_input):
     return dense_to_hex(dense)
 
 def main():
-    puzzle_input = open("day10_input.txt").read().rstrip()
-    print "Part 1 Answer", part1(256, puzzle_input)
-    print "Part 2 Answer", part2(puzzle_input)
+    puzzle_input = adventofcode.read_input(10)
+    adventofcode.answer(1, 20056, part1(256, puzzle_input))
+    adventofcode.answer(2, 'd9a7de4a809c56bf3a9465cb84392c8e', part2(puzzle_input))
 
 if __name__ == '__main__':
     import doctest

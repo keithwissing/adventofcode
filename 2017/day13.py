@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def parse_input_line(line):
     """
     >>> parse_input_line("24: 10")
@@ -41,10 +43,10 @@ def part2(layers):
     return delay
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day13_input.txt")]
+    puzzle_input = adventofcode.read_input(13)
     layers = [parse_input_line(x) for x in puzzle_input]
-    print "Part 1 Answer", part1(layers)
-    print "Part 2 Answer", part2(layers)
+    adventofcode.answer(1, 2384, part1(layers))
+    adventofcode.answer(2, 3921270, part2(layers))
 
 if __name__ == '__main__':
     import doctest

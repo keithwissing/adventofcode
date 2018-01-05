@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def inverse_captcha(puzzle_input):
     """
     >>> inverse_captcha("1122")
@@ -12,9 +14,9 @@ def inverse_captcha(puzzle_input):
     9
     """
     result = 0
-    circle = puzzle_input[:]+puzzle_input[0]
-    for x in range(0,len(circle)-1):
-        if circle[x] == circle[x+1]:
+    circle = puzzle_input[:] + puzzle_input[0]
+    for x in range(0, len(circle) - 1):
+        if circle[x] == circle[x + 1]:
             result = result + int(circle[x])
     return result
 
@@ -40,24 +42,23 @@ def inverse_captcha_skip(puzzle_input, skip):
     4
     """
     result = 0
-    for x in range(0,len(puzzle_input)):
-        if puzzle_input[x] == puzzle_input[(x+skip)%len(puzzle_input)]:
+    for x in range(0, len(puzzle_input)):
+        if puzzle_input[x] == puzzle_input[(x + skip) % len(puzzle_input)]:
             result = result + int(puzzle_input[x])
     return result
 
 def inverse_captcha_fun(puzzle_input, skip):
-    return sum([int(x) for i,x in enumerate(puzzle_input[:]) if x == puzzle_input[(i+skip)%len(puzzle_input)]])
+    return sum([int(x) for i, x in enumerate(puzzle_input[:]) if x == puzzle_input[(i + skip) % len(puzzle_input)]])
 
 def main():
-    puzzle_input = open("day01_input.txt").read().rstrip()
-    print "Part 1 Answer", inverse_captcha(puzzle_input)
-    print "Part 1 Answer", inverse_captcha_skip(puzzle_input, 1)
-    print "Part 1 Answer", inverse_captcha_fun(puzzle_input, 1)
-    print "Part 2 Answer", inverse_captcha_skip(puzzle_input, len(puzzle_input)/2)
-    print "Part 2 Answer", inverse_captcha_fun(puzzle_input, len(puzzle_input)/2)
+    puzzle_input = adventofcode.read_input(1)
+    adventofcode.answer(1, 1144, inverse_captcha(puzzle_input))
+    adventofcode.answer(1, 1144, inverse_captcha_skip(puzzle_input, 1))
+    adventofcode.answer(1, 1144, inverse_captcha_fun(puzzle_input, 1))
+    adventofcode.answer(2, 1194, inverse_captcha_skip(puzzle_input, len(puzzle_input) / 2))
+    adventofcode.answer(2, 1194, inverse_captcha_fun(puzzle_input, len(puzzle_input) / 2))
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
     main()
-

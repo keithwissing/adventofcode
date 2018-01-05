@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def parse_input_line(line):
     """
     >>> parse_input_line("pbga (66)")
@@ -51,10 +53,10 @@ def find_incorrect_weight(programs):
     return winner[1]
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day07_input.txt")]
+    puzzle_input = adventofcode.read_input(7)
     programs = [parse_input_line(x) for x in puzzle_input]
-    print "Part 1 Answer", find_bottom(programs)
-    print "Part 2 Answer", find_incorrect_weight(programs)
+    adventofcode.answer(1, 'hlhomy', find_bottom(programs))
+    adventofcode.answer(2, 1505, find_incorrect_weight(programs))
 
 if __name__ == '__main__':
     import doctest

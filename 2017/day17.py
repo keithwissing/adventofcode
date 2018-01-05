@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def part1(steps):
     """
     >>> part1(3)
@@ -37,14 +39,10 @@ def part2var(steps, iterations):
     return afterz
 
 def main():
-    puzzle_input = open("day17_input.txt").read().rstrip()
+    puzzle_input = adventofcode.read_input(17)
     steps = int(puzzle_input)
-    a1 = part1(steps)
-    print "Part 1 Answer", a1
-    assert a1 == 1547
-    a2 = part2(steps)
-    print "Part 2 Answer", a2
-    assert a2 == 31154878
+    adventofcode.answer(1, 1547, part1(steps))
+    adventofcode.answer(2, 31154878, part2(steps))
 
 if __name__ == '__main__':
     import doctest

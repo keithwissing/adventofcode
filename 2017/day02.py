@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def checksum_by_row(puzzle_input):
     """
     >>> checksum_by_row(["5\\t1\\t9\\t5", "7\\t5\\t3", "2\\t4\\t6\\t8"])
@@ -28,12 +30,11 @@ def only_divisible(puzzle_input):
     return result
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day02_input.txt")]
-    print "Part 1 Answer", checksum_by_row(puzzle_input)
-    print "Part 2 Answer", only_divisible(puzzle_input)
+    puzzle_input = adventofcode.read_input(2)
+    adventofcode.answer(1, 39126, checksum_by_row(puzzle_input))
+    adventofcode.answer(2, 258, only_divisible(puzzle_input))
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
     main()
-

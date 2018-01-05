@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def interations_to_loop(banks):
     """
     >>> interations_to_loop([0, 2, 7, 0])
@@ -52,10 +54,10 @@ def reallocate(banks):
     return banks
 
 def main():
-    puzzle_input = open("day06_input.txt").read().rstrip()
+    puzzle_input = adventofcode.read_input(6)
     puzzle_input = [int(x) for x in puzzle_input.split()]
-    print "Part 1 Answer", interations_to_loop(puzzle_input)
-    print "Part 2 Answer", size_of_loop(puzzle_input)
+    adventofcode.answer(1, 6681, interations_to_loop(puzzle_input))
+    adventofcode.answer(2, 2392, size_of_loop(puzzle_input))
 
 if __name__ == '__main__':
     import doctest

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def part1(puzzle_input):
     """
     >>> part1("ne,ne,ne")
@@ -38,9 +40,9 @@ def part2(puzzle_input):
     return far
 
 def main():
-    puzzle_input = open("day11_input.txt").read().rstrip()
-    print "Part 1 Answer", part1(puzzle_input)
-    print "Part 2 Answer", part2(puzzle_input)
+    puzzle_input = adventofcode.read_input(11)
+    adventofcode.answer(1, 720, part1(puzzle_input))
+    adventofcode.answer(2, 1485, part2(puzzle_input))
 
 if __name__ == '__main__':
     import doctest

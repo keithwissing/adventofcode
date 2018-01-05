@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def find_directions(lines, posx, posy):
     # should probably check for out of bounds coordinates, but this worked for my input
     dirs = []
@@ -64,13 +66,9 @@ def test1():
     return part1(lines)
 
 def main():
-    lines = [line.rstrip('\n') for line in open("day19_input.txt")]
-    a1 = part1(lines)
-    print "Part 1 Answer", a1
-    assert a1 == 'GEPYAWTMLK'
-    a2 = part2(lines)
-    print "Part 2 Answer", a2
-    assert a2 == 17628
+    lines = adventofcode.read_input(19)
+    adventofcode.answer(1, 'GEPYAWTMLK', part1(lines))
+    adventofcode.answer(2, 17628, part2(lines))
 
 if __name__ == '__main__':
     import doctest

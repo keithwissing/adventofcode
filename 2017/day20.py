@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import adventofcode
 from collections import namedtuple
 import operator
 
@@ -70,14 +71,10 @@ def part2(lines):
     return len(lines)
 
 def main():
-    lines = [line.rstrip('\n') for line in open("day20_input.txt")]
+    lines = adventofcode.read_input(20)
     lines = [parse_line(line) for line in lines]
-    a1 = part1(lines)
-    print "Part 1 Answer", a1
-    assert a1 == 144
-    a2 = part2(lines)
-    print "Part 2 Answer", a2
-    assert a2 == 477
+    adventofcode.answer(1, 144, part1(lines))
+    adventofcode.answer(2, 477, part2(lines))
 
 if __name__ == '__main__':
     import doctest

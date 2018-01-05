@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def parse_input_line(line):
     """
     >>> parse_input_line("set p 316")
@@ -106,14 +108,10 @@ def test2(lines):
     return part2(instructions)
 
 def main():
-    puzzle_input = [line.rstrip('\n') for line in open("day18_input.txt")]
+    puzzle_input = adventofcode.read_input(18)
     instructions = [parse_input_line(x) for x in puzzle_input]
-    a1 = part1(instructions)
-    print "Part 1 Answer", a1
-    assert a1 == 2951
-    a2 = part2(instructions)
-    print "Part 2 Answer", a2
-    assert a2 == 7366
+    adventofcode.answer(1, 2951, part1(instructions))
+    adventofcode.answer(2, 7366, part2(instructions))
 
 if __name__ == '__main__':
     import doctest

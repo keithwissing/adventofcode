@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import adventofcode
+
 def parse_move(move):
     if move[0] == 's':
         return ('s', int(move[1:]))
@@ -80,14 +82,10 @@ def part2var(size, moves, iterations):
     return "".join(group)
 
 def main():
-    puzzle_input = open("day16_input.txt").read().rstrip()
+    puzzle_input = adventofcode.read_input(16)
     moves = parse_input_line(puzzle_input)
-    a1 = part1(16, moves)
-    print "Part 1 Answer", a1
-    assert a1 == 'nlciboghjmfdapek'
-    a2 = part2(16, moves)
-    print "Part 2 Answer", a2
-    assert a2 == 'nlciboghmkedpfja'
+    adventofcode.answer(1, 'nlciboghjmfdapek', part1(16, moves))
+    adventofcode.answer(2, 'nlciboghmkedpfja', part2(16, moves))
 
 if __name__ == '__main__':
     import doctest

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import adventofcode
 import day10
 
 def generate_hex_grid(puzzle_input):
@@ -53,10 +54,10 @@ def count_regions_in_bingrid(bingrid):
     return regions
 
 def main():
-    puzzle_input = open("day14_input.txt").read().rstrip()
+    puzzle_input = adventofcode.read_input(14)
     bingrid = generate_bin_grid(puzzle_input)
-    print "Part 1 Answer", part1(bingrid)
-    print "Part 2 Answer", part2(bingrid)
+    adventofcode.answer(1, 8226, part1(bingrid))
+    adventofcode.answer(2, 1128, part2(bingrid))
 
 if __name__ == '__main__':
     import doctest

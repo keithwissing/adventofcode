@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import adventofcode
 import re
 
 def total_score(line):
@@ -60,9 +61,9 @@ def remove_garbage2(line):
     return re.sub("<.*?>", "<>", line)
 
 def main():
-    puzzle_input = open("day09_input.txt").read().rstrip()
-    print "Part 1 Answer", total_score(puzzle_input)
-    print "Part 2 Answer", count_garbage(puzzle_input)
+    puzzle_input = adventofcode.read_input(9)
+    adventofcode.answer(1, 16021, total_score(puzzle_input))
+    adventofcode.answer(2, 7685, count_garbage(puzzle_input))
 
 if __name__ == '__main__':
     import doctest
