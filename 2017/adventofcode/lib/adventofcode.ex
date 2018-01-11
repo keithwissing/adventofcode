@@ -34,6 +34,11 @@ defmodule Adventofcode do
   end
 
   def answer(part, correct, calculated) do
-    IO.puts "Part #{part} Answer #{calculated}"
+    color = cond do
+      correct == 0 -> :yellow
+      correct == calculated -> :green
+      true -> :red
+    end
+    IO.puts IO.ANSI.format([color, "Part #{part} Answer #{calculated}"], true)
   end
 end
