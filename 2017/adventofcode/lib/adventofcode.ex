@@ -20,8 +20,13 @@ defmodule Adventofcode do
   """
   def read_input(day) do
     pd = day |> Integer.to_string |> String.pad_leading(2, "0")
-    data = File.read! "../day#{pd}_input.txt"
-    lines = String.split data, "\n", trim: true
+    fname = "../day#{pd}_input.txt"
+    data = File.read! fname
+    #lines = String.split data, ~r{\r|\n|\r\n}, trim: true
+    lines = String.split data, ["\r", "\n", "\r\n"], trim: true
+
+    #lines = File.stream!(fname) |> Stream.map( &(String.replace(&1, "\n", "")) ) |> Enum.to_list
+
     case lines do
       [a] -> a
       a -> a
