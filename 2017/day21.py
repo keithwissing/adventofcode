@@ -47,7 +47,6 @@ def flip(subimage):
     return subimage[::-1]
 
 def subimage_matches(rule, subimage):
-    #print "Looking for", subimage
     if len(rule) != len(subimage):
         return False
     erule = [[char for char in row] for row in rule]
@@ -65,8 +64,6 @@ def subimage_matches(rule, subimage):
         if erule == subimage:
             return True
     return False
-
-cache = {}
 
 def subimage_replacement(subimage, rules):
     for rule in rules:
@@ -119,7 +116,7 @@ def main():
     lines = adventofcode.read_input(21)
     rules = [parse_line(line) for line in lines]
     adventofcode.answer(1, 125, part1(rules))
-    #adventofcode.answer(2, 0, part2(rules))
+    adventofcode.answer(2, 1782917, part2(rules))
 
 if __name__ == '__main__':
     import doctest
