@@ -42,6 +42,22 @@ defmodule Day02 do
         Enum.map(sheet, &find_divisible/1) |> Enum.sum
     end
 
+    @doc """
+    iex> Day02.part22([[5, 9, 2, 8], [9, 4, 7, 3], [3, 8, 6, 5]])
+    9
+    """
+    def part22(sheet) do
+        sheet |> 
+        Enum.map(fn (row) -> 
+            Enum.reduce row, 0, fn (first, acc) -> 
+                acc + Enum.reduce row, -1, fn (x, acc) -> 
+                    if(rem(x, first) == 0, do: acc + div(x, first), else: acc) 
+                end
+            end 
+        end) |> 
+        Enum.sum
+    end
+
     def lines_to_sheet(lines) do
         a = Enum.map(lines, &String.split/1)
         Enum.map(a, fn(r) -> Enum.map(r, &String.to_integer/1) end)
@@ -53,6 +69,7 @@ defmodule Day02 do
         answer(1, 39126, checksum sheet)
         answer(1, 39126, checksum2 sheet)
         answer(2, 258, part2 sheet)
+        answer(2, 258, part22 sheet)
     end
 
   end
