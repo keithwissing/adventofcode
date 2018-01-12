@@ -42,7 +42,7 @@ defmodule Day01 do
     def captcha2(digits) do
         l = String.graphemes(digits)
         len = length(l)/2 |> round
-        [a, b] = Enum.chunk(l, len)
+        [a, b] = Enum.chunk_every(l, len)
         l2 = b ++ a
         z = Enum.zip(l, l2)
         Enum.reduce z, 0, fn(v, a) ->
