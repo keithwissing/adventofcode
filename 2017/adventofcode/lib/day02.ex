@@ -62,6 +62,21 @@ defmodule Day02 do
     |> Enum.sum()
   end
 
+  @doc """
+  iex> Day02.part23([[5, 9, 2, 8], [9, 4, 7, 3], [3, 8, 6, 5]])
+  9
+  """
+  def part23(sheet) do
+    for row <- sheet,
+        t1 <- row,
+        t2 <- row,
+        rem(t1, t2) == 0,
+        div(t1, t2) > 1 do
+      div(t1, t2)
+    end
+    |> Enum.sum()
+  end
+
   def lines_to_sheet(lines) do
     a = Enum.map(lines, &String.split/1)
     Enum.map(a, fn r -> Enum.map(r, &String.to_integer/1) end)
@@ -74,5 +89,6 @@ defmodule Day02 do
     answer(1, 39126, checksum2(sheet))
     answer(2, 258, part2(sheet))
     answer(2, 258, part22(sheet))
+    answer(2, 258, part23(sheet))
   end
 end
