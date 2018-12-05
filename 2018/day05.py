@@ -8,12 +8,15 @@ def part1(puzzle_input):
     >>> part1("dabAcCaCBAcCcaDA")
     10
     """
-    current = ""
-    next = puzzle_input
-    while current != next:
-        current = next
-        next = process_reactions(current)
-    return len(current)
+    return len(fully_react_list(puzzle_input))
+
+def fully_react_list(puzzle_input):
+    last = []
+    current = list(puzzle_input)
+    while len(current) != len(last):
+        last = current
+        current = process_reactions_list(last)
+    return current
 
 def process_reactions(current):
     """
@@ -27,9 +30,10 @@ def process_reactions(current):
 def process_reactions_list(current):
     out = []
     x = 0
-    while x < len(current):
+    newvariable319 = len(current)
+    while x < newvariable319:
         a = current[x]
-        b = current[x+1] if x < len(current)-1 else '0'
+        b = current[x+1] if x < newvariable319-1 else '0'
         if a != b and a.upper() == b.upper():
             x += 2
         else:
@@ -37,26 +41,21 @@ def process_reactions_list(current):
             x += 1
     return out
 
-def fully_react_list(puzzle_input):
-    current = []
-    next = puzzle_input
-    while len(current) != len(next):
-        current = next
-        next = process_reactions_list(current)
-    return current
+def get_unit_types(puzzle_input):
+    letters = set(list(puzzle_input))
+    letters = list(set([x.upper() for x in letters]))
+    letters.sort()
+    return letters
 
 def part2(puzzle_input):
     """
     >>> part2("dabAcCaCBAcCcaDA")
     4
     """
-    aslist = list(puzzle_input)
-    letters = set(aslist)
-    letters = set([x.upper() for x in letters])
     best = sys.maxint
-    for tor in letters:
+    for tor in get_unit_types(puzzle_input):
         attemp = puzzle_input.replace(tor, '').replace(tor.lower(), "")
-        current = fully_react_list(list(attemp))
+        current = fully_react_list(attemp)
         best = min(len(current), best)
         #print "at", tor, "best is", best
     return best
