@@ -13,8 +13,8 @@ def part1(puzzle_input):
         for cy in range(fs):
             md = 32767
             mi = -1
-            for ti in range(len(puzzle_input)):
-                td = distance((cx, cy), puzzle_input[ti])
+            for ti, val in enumerate(puzzle_input):
+                td = distance((cx, cy), val)
                 if td == md:
                     mi = -1
                 if td < md:
