@@ -2,7 +2,6 @@
 
 import adventofcode
 
-
 def part1(puzzle_input):
     """
     >>> part1([('C', 'A'), ('C', 'F'), ('A', 'B'), ('A', 'D'), ('B', 'E'), ('D', 'E'), ('F', 'E')])
@@ -10,18 +9,12 @@ def part1(puzzle_input):
     """
     result = ""
     (reqs, todo) = build_requirements(puzzle_input)
-    pos = 0
-    while pos < len(todo):
-        t = todo[pos]
-        if not reqs.has_key(t):
-            result += t
-            todo.remove(t)
-            for _, v in reqs.items():
-                v.discard(t)
-            reqs = {k: v for k, v in reqs.items() if len(v) != 0}
-            pos = 0
-        else:
-            pos += 1
+    finished = set()
+    while todo:
+        ns = find_next_step(reqs, todo, finished)
+        result += ns
+        todo.remove(ns)
+        finished.add(ns)
     return result
 
 def part2(puzzle_input, workers, add_time):
@@ -31,28 +24,25 @@ def part2(puzzle_input, workers, add_time):
     """
     (reqs, todo) = build_requirements(puzzle_input)
     finished = set()
-    num_steps = len(todo)
     working = [None] * workers
     finish = [0] * workers
     now = 0
-    result = ''
     while True:
         for i in range(workers):
             if working[i] != None and finish[i] <= now:
                 finished.add(working[i])
                 working[i] = None
                 finish[i] = 0
-        if len(finished) == num_steps:
+        if not todo and working.count(None) == workers:
             return now
         while None in working:
-            idx = working.index(None)
             ns = find_next_step(reqs, todo, finished)
             if ns is None:
                 break
+            idx = working.index(None)
             working[idx] = ns
-            todo.remove(ns)
             finish[idx] = now + add_time + ord(ns) - ord('A') + 1
-            result += ns
+            todo.remove(ns)
         now += 1
 
 def find_next_step(reqs, todo, finished):
