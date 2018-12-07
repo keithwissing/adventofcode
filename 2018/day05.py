@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import re
+from string import ascii_lowercase, ascii_uppercase
 import sys
 import adventofcode
 
@@ -8,7 +10,8 @@ def part1(puzzle_input):
     >>> part1("dabAcCaCBAcCcaDA")
     10
     """
-    return len(fully_react_list(puzzle_input))
+    #return len(fully_react_list(puzzle_input))
+    return len(fully_react_string(puzzle_input))
 
 def fully_react_list(puzzle_input):
     last = []
@@ -55,10 +58,26 @@ def part2(puzzle_input):
     best = sys.maxint
     for tor in get_unit_types(puzzle_input):
         attemp = puzzle_input.replace(tor, '').replace(tor.lower(), "")
-        current = fully_react_list(attemp)
+        #current = fully_react_list(attemp)
+        current = fully_react_string(attemp)
         best = min(len(current), best)
-        #print "at", tor, "best is", best
     return best
+
+def restring():
+    lu = "|".join([a+b for (a, b) in zip(ascii_lowercase, ascii_uppercase)])
+    ul = "|".join([b+a for (a, b) in zip(ascii_lowercase, ascii_uppercase)])
+    return lu+"|"+ul
+
+def process_reactions_on_string(puzzle):
+    return re.sub(restring(), "", puzzle)
+
+def fully_react_string(puzzle):
+    current = puzzle
+    last = -1
+    while len(current) != last:
+        last = len(current)
+        current = process_reactions_on_string(current)
+    return current
 
 def main():
     puzzle_input = adventofcode.read_input(5)
