@@ -52,13 +52,15 @@ def part2(puzzle_input):
             if crash:
                 for p, i in enumerate(carts):
                     if i[0] == crash[1] and i[1] == crash[0]:
-                        carts[p] = (-1, -1, 0, 0)
+                        carts[p] = (-p-1, -p-1, 0, 0)
         carts = [cart for cart in carts if cart[0] > -1]
     return (carts[0][1], carts[0][0])
 
 def detect_crash(carts):
     locs = [(c[1], c[0]) for c in carts]
     crashes = [item for item, count in collections.Counter(locs).items() if count > 1]
+    if len(crashes) > 1:
+        print "Found more than one crash!"
     return crashes[0] if crashes else None
 
 def move_cart(cart, tracks):
