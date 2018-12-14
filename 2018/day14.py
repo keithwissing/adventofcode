@@ -33,12 +33,11 @@ def part2(puzzle_input):
     elf = [0, 1]
     answer = 0
     while answer <= 0:
-        nr = int(scores[elf[0]]) + int(scores[elf[1]])
-        if nr >= 10:
-            scores += str(nr/10)
-        scores += str(nr%10)
-        elf[0] = (elf[0] + int(scores[elf[0]]) + 1) % len(scores)
-        elf[1] = (elf[1] + int(scores[elf[1]]) + 1) % len(scores)
+        for _ in range(100000): # Thanks clefever for this optimization
+            nr = int(scores[elf[0]]) + int(scores[elf[1]])
+            scores += str(nr)
+            elf[0] = (elf[0] + int(scores[elf[0]]) + 1) % len(scores)
+            elf[1] = (elf[1] + int(scores[elf[1]]) + 1) % len(scores)
         answer = scores.find(puzzle_input)
     return answer
 
@@ -110,7 +109,8 @@ def part2_2(puzzle_input):
 def main():
     puzzle_input = adventofcode.read_input(14)
     adventofcode.answer(1, 1052903161, part1(int(puzzle_input)))
-    adventofcode.answer(2, 20165504, part2_2(puzzle_input))
+    adventofcode.answer(2, 20165504, part2(puzzle_input))
+    #adventofcode.answer(2, 20165504, part2_2(puzzle_input))
 
 if __name__ == '__main__':
     import doctest
