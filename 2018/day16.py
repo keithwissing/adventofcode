@@ -10,12 +10,8 @@ def part1(samples):
     1
     """
     total = 0
-    for sample in samples:
-        (before, instruction, after) = sample
-        possibles = 0
-        for op in all_ops:
-            if after[instruction[3]] == calc(op, before, instruction):
-                possibles += 1
+    for (before, instruction, after) in samples:
+        possibles = sum([1 for op in all_ops if after[instruction[3]] == calc(op, before, instruction)])
         if possibles >= 3:
             total += 1
     return total
@@ -23,8 +19,7 @@ def part1(samples):
 def part2(samples, program):
     possible = {opc: set(all_ops) for opc in range(16)}
 
-    for sample in samples:
-        (before, instruction, after) = sample
+    for (before, instruction, after) in samples:
         for op in all_ops:
             if after[instruction[3]] != calc(op, before, instruction):
                 possible[instruction[0]].discard(op)
