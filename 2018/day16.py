@@ -14,25 +14,31 @@ def part1(samples):
         (before, instruction, after) = sample
         possibles = 0
         for op in all_ops:
-            out = before[:]
-            out[instruction[3]] = calc(op, before, instruction)
-            if out == after:
+            if after[instruction[3]] == calc(op, before, instruction):
                 possibles += 1
         if possibles >= 3:
             total += 1
     return total
 
 def part2(samples, program):
-    possible = {}
-    for opc in range(16):
-        possible[opc] = set(all_ops)
+    possible = {opc: set(all_ops) for opc in range(16)}
+
     for sample in samples:
         (before, instruction, after) = sample
         for op in all_ops:
-            out = before[:]
-            out[instruction[3]] = calc(op, before, instruction)
-            if out != after:
+            if after[instruction[3]] != calc(op, before, instruction):
                 possible[instruction[0]].discard(op)
+
+    reduce_possibles(possible)
+
+    opc2op = {k:list(v)[0] for k, v in possible.iteritems() if len(v) == 1}
+
+    state = [0, 0, 0, 0]
+    for instruction in program:
+        state[instruction[3]] = calc(opc2op[instruction[0]], state, instruction)
+    return state[0]
+
+def reduce_possibles(possible):
     for _ in range(16):
         for k, v in possible.iteritems():
             if len(v) == 1:
@@ -40,12 +46,6 @@ def part2(samples, program):
                 for k2, v2 in possible.iteritems():
                     if k != k2:
                         v2.discard(op)
-    opc2op = {k:list(v)[0] for k, v in possible.iteritems()}
-
-    state = [0, 0, 0, 0]
-    for instruction in program:
-        state[instruction[3]] = calc(opc2op[instruction[0]], state, instruction)
-    return state[0]
 
 def calc(op, before, instruction):
     if op == 'addr':
