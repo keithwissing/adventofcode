@@ -15,10 +15,22 @@ test_data = [
     'x=504, y=10..13',
     'y=13, x=498..504']
 
+test_data_2 = [
+    'x=495, y=2..7',
+    'y=7, x=497..501',
+    'x=501, y=3..7',
+    'x=498, y=2..4',
+    'x=506, y=1..2',
+    'x=498, y=10..13',
+    'x=504, y=10..13',
+    'y=13, x=498..504']
+
 def part1(scans):
     """
     >>> part1(parse_input(test_data))
     (57, 29)
+    >>> part1(parse_input(test_data_2))
+    (17, 0)
     """
     minx, maxx, miny, maxy = 500, 500, 500, 0
     for (d, c1, c2, c3) in scans:
@@ -74,8 +86,6 @@ class Grid(object):
         self.grid[y-self.miny][x-self.minx] = v
 
     def drop_water(self, x, y):
-        if y > self.maxy:
-            return
         if self.get_cell(x, y) == '.':
             self.set_cell(x, y, '|')
             below = self.get_cell(x, y+1)
@@ -94,17 +104,18 @@ class Grid(object):
             t = self.get_cell(p, y)
             if t not in '|':
                 return t == '#'
+            else:
+                if self.get_cell(p, y+1) not in '#~':
+                    return False
             p += d
 
     def change_to_standing(self, x, y):
-        p = x
-        while p > self.minx and self.get_cell(p, y) == '|':
-            self.set_cell(p, y, '~')
-            p -= 1
-        p = x+1
-        while p <= self.maxx and self.get_cell(p, y) == '|':
-            self.set_cell(p, y, '~')
-            p += 1
+        for d in [-1, 1]:
+            p = x + d
+            while self.get_cell(p, y) == '|':
+                self.set_cell(p, y, '~')
+                p += d
+        self.set_cell(x, y, '~')
 
 def parse_input(lines):
     result = []
