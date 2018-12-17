@@ -5,6 +5,8 @@ import adventofcode
 
 sys.setrecursionlimit(10000)
 
+display_tests = False
+
 test_data = [
     'x=495, y=2..7',
     'y=7, x=495..501',
@@ -25,12 +27,24 @@ test_data_2 = [
     'x=504, y=10..13',
     'y=13, x=498..504']
 
+test_data_3 = [
+    'x=495, y=2..7',
+    'y=7, x=497..501',
+    'x=503, y=3..7',
+    'x=498, y=2..4',
+    'x=506, y=1..2',
+    'x=498, y=10..13',
+    'x=504, y=10..13',
+    'y=13, x=498..504']
+
 def part1(scans):
     """
     >>> part1(parse_input(test_data))
     (57, 29)
     >>> part1(parse_input(test_data_2))
     (17, 0)
+    >>> part1(parse_input(test_data_3))
+    (53, 15)
     """
     minx, maxx, miny, maxy = 500, 500, 500, 0
     for (d, c1, c2, c3) in scans:
@@ -54,7 +68,8 @@ def part1(scans):
             for x in range(c2, c3+1):
                 grid.set_cell(x, c1, '#')
     grid.drop_water(500, miny)
-    #grid.display()
+    if display_tests:
+        grid.display()
     return grid.count_water_reach(), grid.count_water_standing()
 
 class Grid(object):
@@ -66,10 +81,8 @@ class Grid(object):
         self.grid = [['.' for _ in range(self.maxx - self.minx + 1)] for _ in range(self.miny, self.maxy + 1)]
 
     def display(self):
-        for y in range(self.miny, self.maxy+1):
-            for x in range(self.minx, self.maxx+1):
-                print self.get_cell(x, y),
-            print
+        for row in self.grid:
+            print ''.join(row)
 
     def count_water_reach(self):
         return sum([sum([1 for v in row if v in '~|']) for row in self.grid])
@@ -78,7 +91,7 @@ class Grid(object):
         return sum([sum([1 for v in row if v in '~']) for row in self.grid])
 
     def get_cell(self, x, y):
-        if y < self.miny or x < self.minx or y > self.maxy or x > self.maxx:
+        if y > self.maxy:
             return ' '
         return self.grid[y-self.miny][x-self.minx]
 
@@ -125,11 +138,12 @@ def parse_input(lines):
     return result
 
 def main():
-    puzzle_input = adventofcode.read_input(17)
-    scans = parse_input(puzzle_input)
-    a1, a2 = part1(scans)
-    adventofcode.answer(1, 39162, a1)
-    adventofcode.answer(2, 32047, a2)
+    if not display_tests:
+        puzzle_input = adventofcode.read_input(17)
+        scans = parse_input(puzzle_input)
+        a1, a2 = part1(scans)
+        adventofcode.answer(1, 39162, a1)
+        adventofcode.answer(2, 32047, a2)
 
 if __name__ == '__main__':
     import doctest
