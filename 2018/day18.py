@@ -43,20 +43,14 @@ class Board(object):
         self.board[y][x] = v
 
     def adjacent_counts(self, x, y):
-        trees, yards = 0, 0
-        for px in range(x-1, x+2):
-            for py in range(y-1, y+2):
-                if px != x or py != y:
-                    cell = self.get(px, py)
-                    if cell == '|':
-                        trees += 1
-                    if cell == '#':
-                        yards += 1
+        cells = [self.get(px, py) for px, py in [(x+i, y+j) for i in (-1, 0, 1) for j in (-1, 0, 1) if i != 0 or j != 0]]
+        trees = cells.count('|')
+        yards = cells.count('#')
         return trees, yards
 
     def count_all(self):
-        trees = sum([sum([1 for cell in row if cell == '|']) for row in self.board])
-        yards = sum([sum([1 for cell in row if cell == '#']) for row in self.board])
+        trees = sum([row.count('|') for row in self.board])
+        yards = sum([row.count('#') for row in self.board])
         return trees, yards
 
     def iterate(self):
