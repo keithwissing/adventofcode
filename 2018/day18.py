@@ -35,7 +35,7 @@ class Board(object):
             print ''.join(row)
 
     def get(self, x, y):
-        if x >= 0 and x < len(self.board[0]) and y >= 0 and y < len(self.board):
+        if x >= 0 and x < self.size and y >= 0 and y < self.size:
             return self.board[y][x]
         return ' '
 
