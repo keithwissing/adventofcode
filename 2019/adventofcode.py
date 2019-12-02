@@ -7,7 +7,6 @@ def read_input(day):
         puzzle_input = puzzle_input[0]
     return puzzle_input
 
-
 def answer(part, correct, calculated):
     if correct == 0:
         color = 'yellow'
@@ -16,4 +15,4 @@ def answer(part, correct, calculated):
     else:
         color = 'red'
     message = "Part %d Answer %s" % (part, calculated)
-    print colored(message, color)
+    print(colored(message, color))
