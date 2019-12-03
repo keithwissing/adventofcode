@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from collections import defaultdict
 import adventofcode
 
 def test1(lines):
@@ -12,8 +11,8 @@ def test1(lines):
     >>> test1(['R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51','U98,R91,D20,R16,D67,R40,U7,R15,U6,R7'])
     135
     """
-    tr = parse(lines)
-    return part1(tr)
+    traces = parse(lines)
+    return part1(traces)
 
 def test2(lines):
     """
@@ -23,57 +22,44 @@ def test2(lines):
     610
     >>> test2(['R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51','U98,R91,D20,R16,D67,R40,U7,R15,U6,R7'])
     410
+    >>> test2(['R20,U10,L10,D10,R10,U10', 'U5,R25'])
+    50
     """
-    tr = parse(lines)
-    return part2(tr)
+    traces = parse(lines)
+    return part2(traces)
 
-def dist(a, b):
+def dist(point1, point2=(0, 0)):
     """
     >>> dist((5, -5), (-5, 5))
     20
     """
-    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+    return abs(point1[0] - point2[0]) + abs(point1[1] - point2[1])
 
 def part1(traces):
-    grid = defaultdict(lambda: '.')
-    for n, trace in enumerate(traces):
-        for pos in trace_positions(trace):
-            if grid[pos] == '.':
-                grid[pos] = n
-            elif grid[pos] != n:
-                grid[pos] = 'X'
-    md = 50000000
-    for i in grid.items():
-        if i[1] == 'X':
-            nd = dist((0, 0), i[0])
-            if nd < md:
-                md = nd
-    return md
+    return min([dist(pos) for pos in set(trace_positions(traces[0])).intersection(trace_positions(traces[1]))])
 
 def trace_positions(trace):
     pos = (0, 0)
-    for (d, l) in trace:
-        change = {'R' : (1, 0), 'L' : (-1, 0), 'U' : (0, 1), 'D': (0, -1)}[d]
-        for _ in range(l):
-            pos = tuple(sum(x) for x in zip(pos, change))
+    for (direction, length) in trace:
+        change = {'R' : (1, 0), 'L' : (-1, 0), 'U' : (0, 1), 'D': (0, -1)}[direction]
+        for _ in range(length):
+            #pos = tuple(sum(x) for x in zip(pos, change))
+            #pos = tuple(map(sum, zip(pos, change)))
+            pos = (pos[0] + change[0], pos[1] + change[1])
             yield pos
 
+def dict_from_enum_first_wins(enum):
+    grid = {}
+    for cnt, pos in enum:
+        if pos not in grid:
+            grid[pos] = cnt + 1
+    return grid
+
 def part2(traces):
-    grid = defaultdict(lambda: (0, 0))
-    for n, trace in enumerate(traces):
-        for cnt, pos in enumerate(trace_positions(trace)):
-            ov = grid[pos]
-            if ov[n] == 0 and n == 0:
-                grid[pos] = (cnt + 1, 0)
-            if ov[n] == 0 and n == 1:
-                grid[pos] = (ov[0], cnt + 1)
-    md = 50000000
-    for i in grid.values():
-        if i[0] != 0 and i[1] != 0:
-            nd = i[0] + i[1]
-            if nd < md:
-                md = nd
-    return md
+    # Dictionary comprehension is last value wins, so this gets the wrong answer for some cases
+    # grids = [{pos: cnt+1 for cnt, pos in enumerate(trace_positions(trace))} for trace in traces]
+    grids = [dict_from_enum_first_wins(enumerate(trace_positions(trace))) for trace in traces]
+    return min([grids[0][pos] + grids[1][pos] for pos in set(grids[0].keys()).intersection(grids[1].keys())])
 
 def parse(lines):
     return [[(x[0], int(x[1:])) for x in l.split(',')] for l in lines]
