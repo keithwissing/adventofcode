@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from collections import defaultdict
 import adventofcode
 
 def test1(lines):
@@ -34,17 +35,13 @@ def dist(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 def part1(traces):
-    grid = {}
+    grid = defaultdict(lambda: '.')
     for n, trace in enumerate(traces):
-        pos = (0, 0)
-        for (d, l) in trace:
-            change = {'R' : (1, 0), 'L' : (-1, 0), 'U' : (0, 1), 'D': (0, -1)}[d]
-            for _ in range(l):
-                pos = tuple(sum(x) for x in zip(pos, change))
-                if grid.get(pos, '.') == '.':
-                    grid[pos] = n
-                elif grid.get(pos) != n:
-                    grid[pos] = 'X'
+        for pos in trace_positions(trace):
+            if grid[pos] == '.':
+                grid[pos] = n
+            elif grid[pos] != n:
+                grid[pos] = 'X'
     md = 50000000
     for i in grid.items():
         if i[1] == 'X':
@@ -62,21 +59,14 @@ def trace_positions(trace):
             yield pos
 
 def part2(traces):
-    grid = {}
-    #print(list(zip(trace_positions(traces[0]), trace_positions(traces[1]))))
+    grid = defaultdict(lambda: (0, 0))
     for n, trace in enumerate(traces):
-        pos = (0, 0)
-        cnt = 0
-        for (d, l) in trace:
-            change = {'R' : (1, 0), 'L' : (-1, 0), 'U' : (0, 1), 'D': (0, -1)}[d]
-            for _ in range(l):
-                pos = tuple(sum(x) for x in zip(pos, change))
-                cnt += 1
-                ov = grid.get(pos, (0, 0))
-                if ov[n] == 0 and n == 0:
-                    grid[pos] = (cnt, 0)
-                if ov[n] == 0 and n == 1:
-                    grid[pos] = (ov[0], cnt)
+        for cnt, pos in enumerate(trace_positions(trace)):
+            ov = grid[pos]
+            if ov[n] == 0 and n == 0:
+                grid[pos] = (cnt + 1, 0)
+            if ov[n] == 0 and n == 1:
+                grid[pos] = (ov[0], cnt + 1)
     md = 50000000
     for i in grid.values():
         if i[0] != 0 and i[1] != 0:

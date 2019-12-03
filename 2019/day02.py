@@ -31,10 +31,11 @@ def run(mem):
     return mem
 
 def run_nv(mem, noun, verb):
-    mem[1] = noun
-    mem[2] = verb
-    run(mem)
-    return mem[0]
+    mem_copy = mem[:]
+    mem_copy[1] = noun
+    mem_copy[2] = verb
+    run(mem_copy)
+    return mem_copy[0]
 
 def part1(mem):
     """
@@ -46,18 +47,15 @@ def part1(mem):
 def part2(mem):
     for n in range(0, 100):
         for v in range(0, 100):
-            try:
-                r = run_nv(mem[:], n, v)
-                if r == 19690720:
-                    return n*100+v
-            except:
-                pass
+            r = run_nv(mem, n, v)
+            if r == 19690720:
+                return n*100+v
 
 def main():
     puzzle_input = adventofcode.read_input(2)
     puzzle_input = [int(x) for x in puzzle_input.split(',')]
-    adventofcode.answer(1, 5305097, part1(puzzle_input[:]))
-    adventofcode.answer(2, 4925, part2(puzzle_input[:]))
+    adventofcode.answer(1, 5305097, part1(puzzle_input))
+    adventofcode.answer(2, 4925, part2(puzzle_input))
 
 if __name__ == '__main__':
     import doctest
