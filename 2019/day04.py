@@ -30,6 +30,13 @@ def meets_rules(val, p2=False):
             return False
     return True
 
+# Alternate implementation
+def meets_rules_2(val, p2=False):
+    strval = str(val)
+    doubles = ['11', '22', '33', '44', '55', '66', '77', '88', '99', '00']
+    return sum(1 for p in range(1, 6) if strval[p] < strval[p-1]) == 0 \
+        and sum(1 for t in doubles if t in strval and (not p2 or t+t[0] not in strval)) > 0
+
 def part1(inp):
     return sum(1 for t in range(inp[0], inp[1]+1) if meets_rules(t))
 
