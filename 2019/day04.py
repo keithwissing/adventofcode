@@ -2,7 +2,7 @@
 
 import adventofcode
 
-def meets_rules(val):
+def meets_rules(val, p2=False):
     """
     >>> meets_rules(111111)
     True
@@ -10,42 +10,23 @@ def meets_rules(val):
     False
     >>> meets_rules(123789)
     False
-    """
-    if val < 111111 or val > 999999:
-        return False
-    strval = str(val)
-    has_double = False
-    for t in ['11', '22', '33', '44', '55', '66', '77', '88', '99', '00']:
-        if t in strval:
-            has_double = True
-    if not has_double:
-        return False
-    for p in range(1, 6):
-        if int(strval[p]) < int(strval[p-1]):
-            return False
-    return True
-
-def meets_rules2(val):
-    """
-    >>> meets_rules2(112233)
+    >>> meets_rules(112233, True)
     True
-    >>> meets_rules2(123444)
+    >>> meets_rules(123444, True)
     False
-    >>> meets_rules2(111122)
+    >>> meets_rules(111122, True)
     True
     """
-    if val < 111111 or val > 999999:
-        return False
     strval = str(val)
     has_double = False
     for t in ['11', '22', '33', '44', '55', '66', '77', '88', '99', '00']:
         if t in strval:
-            if t+t[0] not in strval:
+            if not p2 or t+t[0] not in strval:
                 has_double = True
     if not has_double:
         return False
     for p in range(1, 6):
-        if int(strval[p]) < int(strval[p-1]):
+        if strval[p] < strval[p-1]:
             return False
     return True
 
@@ -53,7 +34,7 @@ def part1(inp):
     return sum(1 for t in range(inp[0], inp[1]+1) if meets_rules(t))
 
 def part2(inp):
-    return sum(1 for t in range(inp[0], inp[1]+1) if meets_rules2(t))
+    return sum(1 for t in range(inp[0], inp[1]+1) if meets_rules(t, True))
 
 def main():
     puzzle_input = adventofcode.read_input(4)
