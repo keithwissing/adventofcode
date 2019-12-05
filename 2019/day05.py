@@ -50,16 +50,18 @@ def run_program(mem):
     while ip >= 0:
         ip = step(memcopy, ip)
 
-def part1(mem):
-    inputs.append(1)
+def run_with_input(mem, input_value):
+    inputs.clear()
     outputs.clear()
+    inputs.append(input_value)
     run_program(mem)
+
+def part1(mem):
+    run_with_input(mem, 1)
     return outputs[-1]
 
 def part2(mem):
-    inputs.append(5)
-    outputs.clear()
-    run_program(mem)
+    run_with_input(mem, 5)
     return outputs[0]
 
 def main():
