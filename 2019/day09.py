@@ -13,13 +13,13 @@ def split_code(code):
     return (modes, opcode)
 
 class IntComputer:
-    def __init__(self, mem):
+    def __init__(self, mem, inputs=None):
         self.ip = 0
         self.rbase = 0
         self.mem = defaultdict(lambda: 0)
         for k, v in enumerate(mem):
             self.mem[k] = v
-        self.inputs = []
+        self.inputs = [] if not inputs else inputs[:] if isinstance(inputs, list) else [inputs]
         self.outputs = []
 
     def get_param(self, n, modes):
@@ -73,11 +73,16 @@ class IntComputer:
             return ip + 4
         raise Exception(f'invalid opcode {opcode} at {ip}')
 
-    def run_program(self, inputs):
-        self.inputs.append(inputs)
+    def run_program(self):
         while self.ip >= 0:
             self.ip = self.step()
         return self.outputs
+
+    def run_until_output(self):
+        self.outputs = []
+        while self.ip >= 0 and not self.outputs:
+            self.ip = self.step()
+        return self.outputs[0] if self.outputs else 0
 
 def test1(program):
     """
@@ -89,18 +94,15 @@ def test1(program):
     [109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99]
     """
     comp = IntComputer(program)
-    comp.run_program(0)
-    return comp.outputs
+    return comp.run_program()
 
 def part1(program):
-    comp = IntComputer(program)
-    comp.run_program(1)
-    return comp.outputs[0]
+    comp = IntComputer(program, 1)
+    return comp.run_program()[0]
 
 def part2(program):
-    comp = IntComputer(program)
-    comp.run_program(2)
-    return comp.outputs[0]
+    comp = IntComputer(program, 2)
+    return comp.run_program()[0]
 
 def main():
     puzzle_input = adventofcode.read_input(9)
