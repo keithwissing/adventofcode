@@ -52,13 +52,13 @@ def dict_from_enum_first_wins(enum):
     grid = {}
     for cnt, pos in enum:
         if pos not in grid:
-            grid[pos] = cnt + 1
+            grid[pos] = cnt
     return grid
 
 def part2(traces):
     # Dictionary comprehension is last value wins, so this gets the wrong answer for some cases
-    # grids = [{pos: cnt+1 for cnt, pos in enumerate(trace_positions(trace))} for trace in traces]
-    grids = [dict_from_enum_first_wins(enumerate(trace_positions(trace))) for trace in traces]
+    # grids = [{pos: cnt for cnt, pos in enumerate(trace_positions(trace), start=1)} for trace in traces]
+    grids = [dict_from_enum_first_wins(enumerate(trace_positions(trace), start=1)) for trace in traces]
     return min([grids[0][pos] + grids[1][pos] for pos in set(grids[0].keys()).intersection(grids[1].keys())])
 
 def parse(lines):
