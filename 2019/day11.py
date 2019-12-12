@@ -85,12 +85,12 @@ class IntComputer:
             self.ip = self.step()
         return self.outputs[0] if self.outputs else -1
 
-def part1(program):
+def run_bot(program, init_val):
     comp = IntComputer(program)
     panel = defaultdict(lambda: 0)
     botpos = (0, 0)
     botdir = 0
-    color = comp.run_until_output(panel[botpos])
+    color = comp.run_until_output(init_val)
     turn = comp.run_until_output()
     while color != -1 and turn != -1:
         panel[botpos] = color
@@ -99,31 +99,22 @@ def part1(program):
         botpos = (botpos[0] + change[0], botpos[1] + change[1])
         color = comp.run_until_output(panel[botpos])
         turn = comp.run_until_output()
-    return len(panel)
+    return panel
+
+def part1(program):
+    return len(run_bot(program, 0))
 
 def part2(program):
-    comp = IntComputer(program)
-    panel = defaultdict(lambda: 0)
-    botpos = (0, 0)
-    botdir = 0
-    color = comp.run_until_output(1)
-    turn = comp.run_until_output()
-    while color != -1 and turn != -1:
-        panel[botpos] = color
-        botdir = (botdir + turn*2 - 1) % 4
-        change = {0 : (0, 1), 1 : (1, 0), 2 : (0, -1), 3 : (-1, 0)}[botdir]
-        botpos = (botpos[0] + change[0], botpos[1] + change[1])
-        color = comp.run_until_output(panel[botpos])
-        turn = comp.run_until_output()
-    minX = min(x for x, y in panel)
-    maxX = max(x for x, y in panel)
-    minY = min(y for x, y in panel)
-    maxY = max(y for x, y in panel)
+    panel = run_bot(program, 1)
+    display_dict_as_grid(panel)
+    return 'PGUEHCJH'
+
+def display_dict_as_grid(panel):
+    (minX, maxX), (minY, maxY) = [(min(c), max(c)) for c in zip(*panel)]
     for row in range(maxY, minY-1, -1):
         line = [panel[(x, row)] for x in range(minX, maxX+1)]
         line = ['#' if x == 1 else ' ' for x in line]
         print(''.join(line))
-    return 'PGUEHCJH'
 
 def main():
     puzzle_input = adventofcode.read_input(11)
