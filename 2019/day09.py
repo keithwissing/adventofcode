@@ -16,9 +16,7 @@ class IntComputer:
     def __init__(self, mem, inputs=None):
         self.ip = 0
         self.rbase = 0
-        self.mem = defaultdict(lambda: 0)
-        for k, v in enumerate(mem):
-            self.mem[k] = v
+        self.mem = defaultdict(lambda: 0, {k:v for k, v in enumerate(mem)})
         self.inputs = [] if not inputs else inputs[:] if isinstance(inputs, list) else [inputs]
         self.outputs = []
 
