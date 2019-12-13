@@ -99,6 +99,7 @@ def part2(program):
     program[0] = 2
     comp = IntComputer(program)
     grid = defaultdict(lambda: 0)
+    ball, paddle = None, None
     score = 0
     out = comp.run_until_output(0)
     while len(out) == 3:
@@ -107,23 +108,21 @@ def part2(program):
             score = tid
         else:
             grid[(x, y)] = tid
+            if tid == 4:
+                ball = x
+            if tid == 3:
+                paddle = x
         # print(f'score={score}')
         # display_dict_as_grid(grid)
-        v = get_input(grid)
+        v = get_input(ball, paddle)
         out = comp.run_until_output(v)
     return score
 
-def get_input(grid):
-    ball, paddle = None, None
-    for pos, tid in grid.items():
-        if tid == 4:
-            ball = pos
-        if tid == 3:
-            paddle = pos
+def get_input(ball, paddle):
     if ball and paddle:
-        if ball[0] < paddle[0]:
+        if ball < paddle:
             return -1
-        if ball[0] > paddle[0]:
+        if ball > paddle:
             return 1
     return 0
 
