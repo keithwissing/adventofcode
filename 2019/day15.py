@@ -86,11 +86,11 @@ class IntComputer:
         return self.outputs[0] if self.outputs else -1
 
 def part1(program):
-    grid = defaultdict(lambda: ' ')
-    o2pos = explore_to_o2(grid, program)
-    # display_dict_as_grid(grid)
-    dist = find_distance(grid)
-    return dist[o2pos]
+    ship = Ship(program)
+    while not ship.o2pos:
+        ship.explore_left()
+    dist = find_distance(ship.grid)
+    return dist[ship.o2pos]
 
 def part2(program):
     ship = Ship(program)
@@ -150,22 +150,22 @@ class Ship:
         if m2:
             self.grid[self.o2pos] = m2
 
-    def explore_randomly(self, howlong=1000):
-        d = randint(1, 4)
-        for _ in range(howlong):
-            out = self.run_step(d)
-            if out == 0:
-                d = randint(1, 4)
-            if out in [1, 2]:
-                if randint(1, 5) == 1:
-                    d = randint(1, 4)
+    # def explore_randomly(self, howlong=1000):
+    #     d = randint(1, 4)
+    #     for _ in range(howlong):
+    #         out = self.run_step(d)
+    #         if out == 0:
+    #             d = randint(1, 4)
+    #         if out in [1, 2]:
+    #             if randint(1, 5) == 1:
+    #                 d = randint(1, 4)
 
-    def explore_2(self, howlong=1000):
-        d = randint(1, 4)
-        for _ in range(howlong):
-            out = self.run_step(d)
-            if out == 0:
-                d = (d + randint(0, 1) * 2 - 2) % 4 + 1
+    # def explore_2(self, howlong=1000):
+    #     d = randint(1, 4)
+    #     for _ in range(howlong):
+    #         out = self.run_step(d)
+    #         if out == 0:
+    #             d = (d + randint(0, 1) * 2 - 2) % 4 + 1
 
     def explore_left(self, howlong=1000):
         d = randint(1, 4)
@@ -176,40 +176,9 @@ class Ship:
             else:
                 d = left[d]
 
-# 1 = North
-# 2 = South
-# 3 = West
-# 4 = East
-
+# 1 = North # 2 = South # 3 = West # 4 = East #
 left = {1:3, 2:4, 3:2, 4:1}
 right = {1:4, 2:3, 3:1, 4:2}
-
-def explore_to_o2(grid, program):
-    comp = IntComputer(program)
-    dd = {1: (-1, 0), 2: (1, 0), 3: (0, -1), 4: (0, 1)}
-    pos = (0, 0)
-    d = randint(1, 4)
-    # for _ in range(100000):
-    while True:
-        out = comp.run_until_output(d)
-        delta = dd[d]
-        np = (pos[0]+delta[0], pos[1]+delta[1])
-        if out == 0:
-            grid[np] = '#'
-            d = randint(1, 4)
-        if out == 1:
-            grid[np] = '.'
-            pos = np
-            if randint(1, 5) == 1:
-                d = randint(1, 4)
-        if out == 2:
-            grid[np] = '&'
-            pos = np
-            o2pos = pos
-            # print(f'=== Found at {pos} ===')
-            break
-    grid[(0, 0)] = 'B'
-    return o2pos
 
 def adjacent(pos):
     for d in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
