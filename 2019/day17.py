@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from operator import add
 from collections import defaultdict
 from itertools import product
 import adventofcode
@@ -108,7 +109,7 @@ def part1(program):
     return total
 
 def adjacent(pos):
-    # for d in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
+    # clockwise, starting up, negative y is up
     for d in [(0, -1), (1, 0), (0, 1), (-1, 0)]:
         yield (pos[0]+d[0], pos[1]+d[1])
 
@@ -135,45 +136,32 @@ def stuff(grid):
             fwd = find_forward(grid, pos, bd)
             delta = {0: (0, -1), 1: (1, 0), 2: (0, 1), 3: (-1, 0)}[bd]
             for _ in range(fwd):
-                pos = (pos[0]+delta[0], pos[1]+delta[1])
+                pos = tuple(map(add, pos, delta))
             steps.append(turn)
             steps.append(str(fwd))
             grid[pos] = 'O'
     print(','.join(steps))
+    assert(','.join(steps) == 'L,6,R,8,R,12,L,6,L,8,L,10,L,8,R,12,L,6,R,8,R,12,L,6,L,8,L,8,L,10,L,6,L,6,L,10,L,8,R,12,L,8,L,10,L,6,L,6,L,10,L,8,R,12,L,6,R,8,R,12,L,6,L,8,L,8,L,10,L,6,L,6,L,10,L,8,R,12')
     # display_dict_as_grid(grid)
 
 def find_forward(grid, pos, bd):
     delta = {0: (0, -1), 1: (1, 0), 2: (0, 1), 3: (-1, 0)}[bd]
     tot = 0
-    pos = (pos[0]+delta[0], pos[1]+delta[1])
+    pos = tuple(map(add, pos, delta))
     while grid[pos] == '#':
         tot += 1
-        pos = (pos[0]+delta[0], pos[1]+delta[1])
+        pos = tuple(map(add, pos, delta))
     return tot
 
 def find_turn(grid, pos, bd):
     adj = [grid[p] for p in adjacent(pos)]
-    if bd == 0:
-        if adj[1] == '#':
-            return 'R'
-        if adj[3] == '#':
-            return 'L'
-    if bd == 2:
-        if adj[1] == '#':
-            return 'L'
-        if adj[3] == '#':
-            return 'R'
-    if bd == 1:
-        if adj[0] == '#':
-            return 'L'
-        if adj[2] == '#':
-            return 'R'
-    if bd == 3:
-        if adj[0] == '#':
-            return 'R'
-        if adj[2] == '#':
-            return 'L'
+    if adj[(bd-1)%4] == '#':
+        return 'L'
+    if adj[(bd+1)%4] == '#':
+        return 'R'
     return ''
+    # c = [(3, 1), (0, 2), (1, 3), (2, 0)][bd]
+    # return 'L' if adj[c[0]] == '#' else 'R' if adj[c[1]] == '#' else ''
 
 def part2(program):
     comp = IntComputer(program)
@@ -196,10 +184,7 @@ def part2(program):
         'n'
     ]
     for line in movement:
-        line = [ord(c) for c in line]
-        line.append(10)
-        for i in line:
-            comp.inputs.append(i)
+        comp.inputs.extend([ord(c) for c in line] + [10])
     comp.run_program()
     # print(comp.outputs)
     return comp.outputs[-1]
