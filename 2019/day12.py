@@ -2,6 +2,7 @@
 
 from itertools import chain, combinations
 from math import gcd
+import re
 import adventofcode
 
 testcase1 = [
@@ -42,8 +43,8 @@ class Moon:
     def energy(self):
         return sum([abs(x) for x in self.pos]) * sum([abs(x) for x in self.vel])
 
-    def dump(self):
-        print(f'pos={self.pos} vel={self.vel}')
+    def __repr__(self):
+        return f'pos={self.pos} vel={self.vel}'
 
 def test1(puzzle_input, rounds):
     """
@@ -100,13 +101,10 @@ def lcm(a, b):
     return abs(a*b) // gcd(a, b)
 
 def parse(lines):
-    ret = []
-    for line in lines:
-        line = line.replace('<', '').replace('>', '').replace(',', '')
-        line = [x[2:] for x in line.split()]
-        line = [int(x) for x in line]
-        ret.append(line)
-    return ret
+    return [[int(x) for x in re.findall(r'-?\d+', l)] for l in lines]
+    # return [[float(x) for x in re.findall(r'-?\d+\.?\d*', l)] for l in lines]
+    # nums = [''.join(c if c in '-.0123456789' else ' ' for c in l) for l in lines]
+    # return [[int(x) for x in row.split()] for row in nums]
 
 def main():
     puzzle_input = adventofcode.read_input(12)
