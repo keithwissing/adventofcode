@@ -2,7 +2,7 @@
 
 from itertools import permutations
 import adventofcode
-from day09 import IntComputer
+from intcomputer import IntComputer
 
 def try_permutation(program, settings):
     signal = 0
@@ -16,8 +16,7 @@ def try_loop_perm(program, settings):
     signal = 0
     amp = 0
     while -1 not in [amps[n].ip for n in range(5)]:
-        amps[amp].inputs.append(signal)
-        signal = amps[amp].run_until_output()
+        signal = amps[amp].run_until_output(amps[amp].inputs + [signal])
         ampout[amp] = signal
         amp = (amp + 1) % 5
     return ampout[4]
