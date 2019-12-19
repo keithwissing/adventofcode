@@ -6,11 +6,10 @@ from itertools import product
 import adventofcode
 from intcomputer import IntComputer
 
-def part1(program):
-    comp = IntComputer(program)
-    out = comp.run_until_output()
+def read_into_grid(comp):
     grid = {}
     pos = (0, 0)
+    out = comp.run_until_output()
     while out > 0:
         if out == 10:
             pos = (0, pos[1]+1)
@@ -18,6 +17,11 @@ def part1(program):
             grid[pos] = chr(out)
             pos = (pos[0]+1, pos[1])
         out = comp.run_until_output()
+    return grid
+
+def part1(program):
+    comp = IntComputer(program)
+    grid = read_into_grid(comp)
     # display_dict_as_grid(grid)
     (minX, maxX), (minY, maxY) = [(min(c), max(c)) for c in zip(*grid)]
     total = 0
@@ -62,7 +66,7 @@ def stuff(grid):
             steps.append(str(fwd))
             grid[pos] = 'O'
     print(','.join(steps))
-    assert(','.join(steps) == 'L,6,R,8,R,12,L,6,L,8,L,10,L,8,R,12,L,6,R,8,R,12,L,6,L,8,L,8,L,10,L,6,L,6,L,10,L,8,R,12,L,8,L,10,L,6,L,6,L,10,L,8,R,12,L,6,R,8,R,12,L,6,L,8,L,8,L,10,L,6,L,6,L,10,L,8,R,12')
+    assert ','.join(steps) == 'L,6,R,8,R,12,L,6,L,8,L,10,L,8,R,12,L,6,R,8,R,12,L,6,L,8,L,8,L,10,L,6,L,6,L,10,L,8,R,12,L,8,L,10,L,6,L,6,L,10,L,8,R,12,L,6,R,8,R,12,L,6,L,8,L,8,L,10,L,6,L,6,L,10,L,8,R,12'
     # display_dict_as_grid(grid)
 
 def find_forward(grid, pos, bd):
@@ -106,9 +110,9 @@ def part2(program):
     ]
     for line in movement:
         comp.inputs.extend([ord(c) for c in line] + [10])
-    comp.run_program()
-    # print(comp.outputs)
-    return comp.outputs[-1]
+    out = comp.run_program()
+    # print(''.join([chr(x) for x in out[:-1]]))
+    return out[-1]
 
 def main():
     puzzle_input = adventofcode.read_input(17)
