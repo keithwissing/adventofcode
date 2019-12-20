@@ -121,44 +121,73 @@ class Grid:
                 self.grid[(x, y)] = c
         self.width = len(lines[0])
         self.height = len(lines)
-        self.all = self.find_all_portals()
+        self.portals = self.find_all_portals()
 
     def find_all_portals(self):
         ret = []
         for k, v in list(self.grid.items()):
             if v in ascii_uppercase:
-                for t in list(adjacent(k))[1:3]:
+                for t in list(adjacent(k))[1:3]: # right or down
                     if self.grid[t] in ascii_uppercase:
                         for d in chain(adjacent(k), adjacent(t)):
                             if self.grid[d] == '.':
                                 ret.append((v+self.grid[t], d))
         return ret
 
-    def find(self, portal, pos):
-        for t in self.all:
-            if t[0] == portal and t[1] != pos:
-                return t[1]
-        return None
-
-    def portal(self, pos):
-        for t in self.all:
+    def portal_at(self, pos):
+        for t in self.portals:
             if t[1] == pos:
                 return t[0]
         return None
 
+    def other_side(self, portal, pos):
+        for t in self.portals:
+            if t[0] == portal and t[1] != pos:
+                return t[1]
+        return None
+
     def isinner(self, pos):
         x, y = pos
-        if y > 3 and y < self.height - 4 \
-            and x > 3 and x < self.width - 4:
-            return True
-        return False
+        return 3 < y < self.height - 4 and 3 < x < self.width - 4
 
     def isouter(self, pos):
         x, y = pos
-        if y < 3 or y > self.height - 4 \
-            or x < 3 or x > self.width - 4:
-            return True
-        return False
+        return y < 3 or y > self.height - 4 or x < 3 or x > self.width - 4
+
+    def adjacent_1(self, pos):
+        for a in adjacent(pos):
+            if self.grid[a] == '.':
+                yield a
+        port = self.portal_at(pos)
+        if port and port not in ['AA', 'ZZ']:
+            os = self.other_side(port, pos)
+            yield os
+
+    def adjacent_2(self, tpos):
+        pos, l = tpos
+        for a in adjacent(pos):
+            if self.grid[a] == '.':
+                yield (a, l)
+        port = self.portal_at(pos)
+        if port and port not in ['AA', 'ZZ']:
+            os = self.other_side(port, pos)
+            if self.isinner(pos) and self.isouter(os):
+                yield (os, l + 1)
+            if self.isouter(pos) and self.isinner(os) and l > 0:
+                yield (os, l - 1)
+
+def distances(dist, start, goal, adjf, limf=None):
+    heap = []
+    for a in adjf(start):
+        heappush(heap, (1, a))
+    while heap and goal not in dist:
+        d, pos = heappop(heap)
+        if pos not in dist or d < dist[pos]:
+            dist[pos] = d
+            for a in adjf(pos):
+                if limf is None or limf(a):
+                    heappush(heap, (d + 1, a))
+    return dist
 
 def part1(lines):
     """
@@ -168,56 +197,26 @@ def part1(lines):
     58
     """
     grid = Grid(lines)
-    dist = {}
-    heap = []
-    pos = grid.find('AA', (0, 0))
-    dist[pos] = 0
-    for a in adjacent(pos):
-        heappush(heap, (1, a))
-    while heap:
-        d, pos = heappop(heap)
-        if grid.grid[pos] == '.':
-            if pos not in dist or d < dist[pos]:
-                dist[pos] = d
-                for a in adjacent(pos):
-                    if grid.grid[a] == '.':
-                        heappush(heap, (d + 1, a))
-                port = grid.portal(pos)
-                if port and port not in ['AA', 'ZZ']:
-                    os = grid.find(port, pos)
-                    heappush(heap, (d + 1, os))
-    pos = grid.find('ZZ', (0, 0))
-    return dist[pos]
+    start = grid.other_side('AA', 0)
+    goal = grid.other_side('ZZ', 0)
+    dist = distances({start: 0}, start, goal, grid.adjacent_1)
+    return dist[goal]
 
 def part2(lines):
     """
+    >>> part2(testdata1)
+    26
+    >>> part2(testdata2)
+    -1
     >>> part2(testdata3)
     396
     """
     grid = Grid(lines)
-    dist = {}
-    heap = []
-    pos = grid.find('AA', (0, 0))
-    dist[(pos, 0)] = 0
-    for a in adjacent(pos):
-        heappush(heap, (1, a, 0))
-    goal = (grid.find('ZZ', (0, 0)), 0)
-    while heap and goal not in dist:
-        d, pos, l = heappop(heap)
-        if grid.grid[pos] == '.' and l <= 50: # limit of 25 works for my input
-            if (pos, l) not in dist or d < dist[(pos, l)]:
-                dist[(pos, l)] = d
-                for a in adjacent(pos):
-                    if grid.grid[a] == '.':
-                        heappush(heap, (d + 1, a, l))
-                port = grid.portal(pos)
-                if port and port not in ['AA', 'ZZ']:
-                    os = grid.find(port, pos)
-                    if grid.isinner(pos) and grid.isouter(os):
-                        heappush(heap, (d + 1, os, l + 1))
-                    if grid.isouter(pos) and grid.isinner(os) and l > 0:
-                        heappush(heap, (d + 1, os, l - 1))
-    return dist[goal]
+    start = (grid.other_side('AA', 0), 0)
+    goal = (grid.other_side('ZZ', 0), 0)
+    max_level = 50 # limit of 25 works for my input
+    dist = distances({start: 0}, start, goal, grid.adjacent_2, lambda p: p[1] <= max_level)
+    return dist[goal] if goal in dist else -1
 
 def main():
     puzzle_input = adventofcode.read_input(20)
