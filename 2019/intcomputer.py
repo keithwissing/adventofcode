@@ -83,8 +83,15 @@ class IntComputer:
         return self.outputs[0] if self.outputs else -1
 
     def run_until_outputs(self, inputs=None):
-        self.inputs = [inputs]
+        self.inputs = [] if inputs is None else inputs[:] if isinstance(inputs, list) else [inputs]
         self.outputs = []
         while self.ip >= 0 and len(self.outputs) < 3:
+            self.ip = self.step()
+        return self.outputs if self.outputs else []
+
+    def run_until_outputs_or_no_input(self, inputs=None):
+        self.inputs = [] if inputs is None else inputs[:] if isinstance(inputs, list) else [inputs]
+        self.outputs = []
+        while self.ip >= 0 and len(self.outputs) < 3 and len(self.inputs) > 0:
             self.ip = self.step()
         return self.outputs if self.outputs else []
