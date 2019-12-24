@@ -9,6 +9,14 @@ def adjacent(pos):
     for d in [(0, -1), (1, 0), (0, 1), (-1, 0)]:
         yield (pos[0]+d[0], pos[1]+d[1])
 
+def cell(current, neighbors):
+    nei = sum(1 if n == '#' else 0 for n in neighbors)
+    if current == '#' and nei != 1:
+        return '.'
+    if current == '.' and nei in [1, 2]:
+        return '#'
+    return current
+
 class Grid:
     def __init__(self, lines):
         self.grid = [list(l) for l in lines]
@@ -21,18 +29,9 @@ class Grid:
         return '.'
 
     def evolve(self):
-        ng = []
-        for _ in range(self.height):
-            ng.append([' '] * self.width)
+        ng = [[' '] * self.width for _ in range(self.height)]
         for x, y in product(range(self.width), range(self.height)):
-            me = self.get((x, y))
-            nei = sum(1 if self.get(p) == '#' else 0 for p in adjacent((x, y)))
-            if me == '#' and nei != 1:
-                ng[y][x] = '.'
-            elif me == '.' and nei in [1, 2]:
-                ng[y][x] = '#'
-            else:
-                ng[y][x] = me
+            ng[y][x] = cell(self.get((x, y)), [self.get(p) for p in adjacent((x, y))])
         self.grid = ng
 
     def asstr(self):
@@ -40,8 +39,7 @@ class Grid:
 
     def biodiversity(self):
         a = [item for sublist in self.grid for item in sublist]
-        a = ['1' if x == '#' else '0' for x in a]
-        a = ''.join(a)
+        a = ''.join('1' if x == '#' else '0' for x in a)
         return int(a[::-1], 2)
 
     def __repr__(self):
@@ -106,20 +104,13 @@ class FoldedSpace:
                 self.grid[(x, y, 0)] = '#'
 
     def evolve(self, hint):
-        ng = defaultdict(lambda: '.')
+        ng = {}
         minl, maxl = -hint//2, hint//2
         for x, y, l in product(range(5), range(5), range(minl, maxl+1)):
             if x == 2 and y == 2:
                 continue
             k = (x, y, l)
-            me = self.grid[k]
-            nei = sum(1 if self.grid[p] == '#' else 0 for p in fold_adjacent(k))
-            if me == '#' and nei != 1:
-                ng[k] = '.'
-            elif me == '.' and nei in [1, 2]:
-                ng[k] = '#'
-            else:
-                ng[k] = me
+            ng[k] = cell(self.grid[k], [self.grid[p] for p in fold_adjacent(k)])
         self.grid.update(ng)
 
     def count_bugs(self):
@@ -130,6 +121,10 @@ class FoldedSpace:
             print(''.join(self.grid[(x, y, l)] for x in range(5)))
 
 def part2(lines, minutes):
+    """
+    >>> part2(testdata1, 10)
+    99
+    """
     g = FoldedSpace(lines)
     for _ in range(minutes):
         g.evolve(minutes)
