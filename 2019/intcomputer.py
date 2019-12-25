@@ -95,3 +95,12 @@ class IntComputer:
         while self.ip >= 0 and len(self.outputs) < 3 and len(self.inputs) > 0:
             self.ip = self.step()
         return self.outputs if self.outputs else []
+
+    def run_until_prompt(self, inputs):
+        self.inputs = inputs
+        self.outputs = []
+        while self.ip >= 0:
+            if not self.inputs and self.outputs and self.outputs[-3:] == [ord('n'), ord('d'), ord('?')]:
+                break
+            self.ip = self.step()
+        return self.outputs if self.outputs else []
