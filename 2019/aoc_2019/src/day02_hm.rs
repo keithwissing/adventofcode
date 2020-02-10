@@ -1,33 +1,29 @@
-use std::fs;
 use std::collections::HashMap;
+use std::fs;
 
-fn parameter(p: i32, memory: &HashMap<i32, i32>, ip:&i32) -> i32{
+fn parameter(p: i32, memory: &HashMap<i32, i32>, ip: &i32) -> i32 {
     let pv = match memory.get(&(ip + p)) {
         None => -1,
-        Some(v) => *v
+        Some(v) => *v,
     };
     pv
 }
 
-fn grr(memory: &HashMap<i32, i32>, ip:&i32) -> i32 {
-    parameter(0, memory, ip)
-}
-
-fn step(memory: &mut HashMap<i32, i32>, ip:&i32) -> bool {
+fn step(memory: &mut HashMap<i32, i32>, ip: &i32) -> bool {
     let instruction = parameter(0, memory, ip);
     let p1 = parameter(1, memory, ip);
     let p2 = parameter(2, memory, ip);
     let p3 = parameter(3, memory, ip);
-    let v1 = grr(memory, &p1);
-    let v2 = grr(memory, &p2);
+    let v1 = **&memory.get(&p1).unwrap();
+    let v2 = **&memory.get(&p2).unwrap();
     if instruction == 1 {
-        memory.insert(p3, v1+v2);
+        memory.insert(p3, v1 + v2);
     }
     if instruction == 2 {
-        memory.insert(p3, v1*v2);
+        memory.insert(p3, v1 * v2);
     }
     if instruction == 99 {
-        return false
+        return false;
     }
     true
 }
@@ -39,7 +35,7 @@ fn run(memory: &mut HashMap<i32, i32>) -> i32 {
         ip += 4;
         con = step(memory, &ip);
     }
-    grr(memory, &0)
+    **&memory.get(&0).unwrap()
 }
 
 fn run_nv(program: &HashMap<i32, i32>, noun: i32, verb: i32) -> i32 {
@@ -54,7 +50,7 @@ fn part2(memory: &HashMap<i32, i32>) -> i32 {
         for v in 0..100 {
             let r = run_nv(memory, n, v);
             if r == 19690720 {
-                return n * 100 + v
+                return n * 100 + v;
             }
         }
     }
@@ -63,9 +59,11 @@ fn part2(memory: &HashMap<i32, i32>) -> i32 {
 
 pub fn day02() {
     let filename = "../day02_input.txt";
-    let input = fs::read_to_string(filename)
-        .expect("Could not read file");
-    let values: Vec<i32> = input.split(",").map(|x| x.parse::<i32>().unwrap()).collect();
+    let input = fs::read_to_string(filename).expect("Could not read file");
+    let values: Vec<i32> = input
+        .split(",")
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect();
     let mut memory = HashMap::new();
     for (i, v) in values.iter().enumerate() {
         memory.insert(i as i32, *v);
