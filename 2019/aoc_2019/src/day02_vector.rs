@@ -1,5 +1,3 @@
-use std::fs;
-
 fn step(memory: &mut Vec<i32>, ip: i32) -> bool {
     let instr = *&memory[ip as usize];
     if instr == 99 {
@@ -46,17 +44,10 @@ fn part2(program: &Vec<i32>) -> i32 {
     0
 }
 
-pub fn day02() {
-    let filename = "../day02_input.txt";
-    let input = fs::read_to_string(filename).expect("Could not read file");
-    let mut program: Vec<i32> = input
-        .split(",")
-        .map(|x| x.parse::<i32>().unwrap())
-        .collect();
-    let part1 = run_nv(&mut program, 12, 2);
-    println!("Day 02 part 1: {}", part1);
-    let part2 = part2(&mut program);
-    println!("Day 02 part 2: {}", part2);
+pub fn day02(program: &[i32]) -> (i32, i32) {
+    let p1 = run_nv(&program.to_vec(), 12, 2);
+    let p2 = part2(&program.to_vec());
+    (p1, p2)
 }
 
 #[cfg(test)]

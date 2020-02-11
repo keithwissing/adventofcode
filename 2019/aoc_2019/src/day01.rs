@@ -1,5 +1,3 @@
-use std::fs;
-
 /// Calculate fuel for mass
 ///
 /// # Examples
@@ -23,14 +21,10 @@ fn plus_fuel(x: &i32) -> i32 {
     total
 }
 
-pub fn day01() {
-    let filename = "../day01_input.txt";
-    let input = fs::read_to_string(filename).expect("Could not read file");
-    let values: Vec<i32> = input.lines().map(|x| x.parse::<i32>().unwrap()).collect();
+pub fn day01(values: &[i32]) -> (i32, i32) {
     let part1: i32 = values.iter().map(fuel).sum();
-    println!("Day 01 Part 1 answer: {}", part1);
     let part2: i32 = values.iter().map(plus_fuel).sum();
-    println!("Day 01 Part 2 answer: {}", part2);
+    (part1, part2)
 }
 
 #[cfg(test)]

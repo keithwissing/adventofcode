@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fs;
 
 fn parameter(p: i32, memory: &HashMap<i32, i32>, ip: &i32) -> i32 {
     let pv = match memory.get(&(ip + p)) {
@@ -57,19 +56,12 @@ fn part2(memory: &HashMap<i32, i32>) -> i32 {
     0
 }
 
-pub fn day02() {
-    let filename = "../day02_input.txt";
-    let input = fs::read_to_string(filename).expect("Could not read file");
-    let values: Vec<i32> = input
-        .split(",")
-        .map(|x| x.parse::<i32>().unwrap())
-        .collect();
+pub fn day02(values: &[i32]) -> (i32, i32) {
     let mut memory = HashMap::new();
     for (i, v) in values.iter().enumerate() {
         memory.insert(i as i32, *v);
     }
     let part1 = run_nv(&mut memory, 12, 2);
-    println!("Day 02 part 1: {}", part1);
     let part2 = part2(&mut memory);
-    println!("Day 02 part 2: {}", part2);
+    (part1, part2)
 }
