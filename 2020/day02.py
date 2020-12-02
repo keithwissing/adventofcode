@@ -2,6 +2,12 @@
 
 import adventofcode
 
+def parse(line):
+    r, l, p = line.split()
+    i, a = r.split('-')
+    l = l[0]
+    return int(i), int(a), l, p
+
 def part1(entries):
     """
     >>> part1(['1-3 a: abcde', '1-3 b: cdefg', '2-9 c: ccccccccc'])
@@ -9,10 +15,8 @@ def part1(entries):
     """
     valid = 0
     for line in entries:
-        r, l, p = line.split()
-        i, a = r.split('-')
-        l = l[0]
-        if int(i) <= p.count(l) <= int(a):
+        i, a, l, p = parse(line)
+        if i <= p.count(l) <= a:
             valid += 1
     return valid
 
@@ -23,10 +27,8 @@ def part2(entries):
     """
     valid = 0
     for line in entries:
-        r, l, p = line.split()
-        i, a = r.split('-')
-        l = l[0]
-        if (p[int(i)-1] + p[int(a)-1]).count(l) == 1:
+        i, a, l, p = parse(line)
+        if (p[i-1] + p[a-1]).count(l) == 1:
             valid += 1
     return valid
 
