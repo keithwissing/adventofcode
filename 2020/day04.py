@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import adventofcode
 
 t1 = [
@@ -115,10 +116,41 @@ def part2(lines):
             tot += 1
     return tot
 
+def valid_height(val):
+    allowed = {'cm': (150, 193), 'in': (59, 76)}
+    m = re.match(r'^(\d+)(in|cm)$', val)
+    if m:
+        h = int(m[1])
+        ar = allowed[m[2]]
+        return ar[0] <= h <= ar[1]
+    return False
+
+checks = {
+    'byr': lambda v: 1920 <= int(v) <= 2002,
+    'iyr': lambda v: 2010 <= int(v) <= 2020,
+    'eyr': lambda v: 2020 <= int(v) <= 2030,
+    'hgt': lambda v: valid_height(v),
+    'hcl': lambda val: re.match(r'^#[0-9a-f]{6}$', val),
+    'ecl': lambda val: val in ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'],
+    'pid': lambda val: re.match(r'^[0-9]{9}$', val),
+}
+
+def part2_2(lines):
+    tot = 0
+    for pp in passports(lines):
+        invalid = False
+        for k, check in checks.items():
+            if k not in pp or not check(pp[k]):
+                invalid = True
+        if not invalid:
+            tot += 1
+    return tot
+
 def main():
     puzzle_input = adventofcode.read_input(4)
-    adventofcode.answer(1, 0, part1(puzzle_input))
-    adventofcode.answer(2, 0, part2(puzzle_input))
+    adventofcode.answer(1, 254, part1(puzzle_input))
+    adventofcode.answer(2, 184, part2(puzzle_input))
+    adventofcode.answer(2, 184, part2_2(puzzle_input))
 
 if __name__ == '__main__':
     import doctest
