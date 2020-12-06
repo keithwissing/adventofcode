@@ -48,10 +48,7 @@ def part2(lines):
     tot = 0
     for group in groups(lines):
         a = [set(l) for l in group]
-        b = a[0]
-        for c in a[1:]:
-            b &= c
-        tot += len(b)
+        tot += len(set.intersection(*a))
     return tot
 
 def main():
