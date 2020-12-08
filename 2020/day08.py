@@ -26,35 +26,22 @@ def run(lines):
         if been[ip]:
             return (acc, False)
         been[ip] = True
-        inst = lines[ip]
-        if inst[:3] == 'nop':
+        instruction = lines[ip]
+        op, arg = instruction[:3], int(instruction[4:])
+        if op == 'nop':
             ip += 1
-        if inst[:3] == 'acc':
+        if op == 'acc':
             ip += 1
-            acc += int(inst[4:])
-        if inst[:3] == 'jmp':
-            ip += int(inst[4:])
+            acc += arg
+        if op == 'jmp':
+            ip += arg
 
 def part1(lines):
     """
     >>> part1(t1)
     5
     """
-    ip = 0
-    acc = 0
-    been = [False] * len(lines)
-    while True:
-        if been[ip]:
-            break
-        been[ip] = True
-        inst = lines[ip]
-        if inst[:3] == 'nop':
-            ip += 1
-        if inst[:3] == 'acc':
-            ip += 1
-            acc += int(inst[4:])
-        if inst[:3] == 'jmp':
-            ip += int(inst[4:])
+    acc, _ = run(lines)
     return acc
 
 def part2(lines):
@@ -62,7 +49,7 @@ def part2(lines):
     >>> part2(t1)
     8
     """
-    for t in range(0, len(lines)):
+    for t, _ in enumerate(lines):
         if lines[t][:3] == 'acc':
             continue
         copy = lines[:]
@@ -73,6 +60,7 @@ def part2(lines):
         acc, completed = run(copy)
         if completed:
             return acc
+    raise 'Failed'
 
 def main():
     puzzle_input = adventofcode.read_input(8)
