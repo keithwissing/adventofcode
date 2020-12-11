@@ -21,55 +21,42 @@ def safe_get(y, x, lines):
     return None
 
 def count_adjacent(y, x, lines):
-    count = 0
-    for yi in range(y - 1, y + 2):
-        for xi in range(x - 1, x + 2):
-            if x == xi and y == yi:
-                continue
-            if safe_get(yi, xi, lines) == '#':
-                count += 1
-    return count
+    dirs = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    return sum(1 for d in dirs if safe_get(y + d[0], x + d[1], lines) == '#')
+
+def see_occupied(pos, delta, lines):
+    while True:
+        pos = (pos[0] + delta[0], pos[1] + delta[1])
+        peek = safe_get(pos[0], pos[1], lines)
+        if peek == '.':
+            continue
+        if peek is None or peek == 'L':
+            return False
+        if peek == '#':
+            return True
 
 def count_seen(y, x, lines):
-    count = 0
     dirs = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-    for d in dirs:
-        pos = (y, x)
-        while True:
-            pos = (pos[0] + d[0], pos[1] + d[1])
-            peek = safe_get(pos[0], pos[1], lines)
-            if peek is None or peek == 'L':
-                break
-            if peek == '.':
-                continue
-            if peek == '#':
-                count += 1
-                break
-    return count
+    return sum(1 for d in dirs if see_occupied((y, x), d, lines))
 
-def tick(lines, counter, tolerance):
-    changed = False
+def apply(y, x, seats, counter, tolerance):
+    cur = seats[y][x]
+    if cur == 'L' and counter(y, x, seats) == 0:
+        return '#'
+    if cur == '#' and counter(y, x, seats) >= tolerance:
+        return 'L'
+    return cur
+
+def tick(seats, counter, tolerance):
     future = []
-    for yi in range(0, len(lines)):
-        nl = ''
-        for xi in range(0, len(lines[0])):
-            cur = lines[yi][xi]
-            if cur == 'L' and counter(yi, xi, lines) == 0:
-                nl += '#'
-                changed = True
-            elif cur == '#' and counter(yi, xi, lines) >= tolerance:
-                nl += 'L'
-                changed = True
-            else:
-                nl += cur
+    for y, cur in enumerate(seats):
+        nl = ''.join(apply(y, x, seats, counter, tolerance) for x in range(0, len(cur)))
         future.append(nl)
+    changed = seats != future
     return future, changed
 
 def count_occupied(lines):
-    tot = 0
-    for l in lines:
-        tot += l.count('#')
-    return tot
+    return sum(l.count('#') for l in lines)
 
 def find_occupied_at_stability(seats, counter, tolerance):
     changed = True
