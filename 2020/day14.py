@@ -23,11 +23,10 @@ def apply_mask(val, mask):
     om = int(mask.replace('X', '0'), 2)
     return val & am | om
 
-def part1(lines):
-    """
-    >>> part1(t1)
-    165
-    """
+def part1_setter(mem, mask, addr, val):
+    mem[addr] = apply_mask(val, mask)
+
+def process(lines, memsetter):
     mem = {}
     for line in lines:
         if line[:4] == 'mask':
@@ -36,8 +35,15 @@ def part1(lines):
             p = re.match(r'mem\[(\d+)\] = (\d+)', line)
             addr = int(p[1])
             val = int(p[2])
-            mem[addr] = apply_mask(val, mask)
-    return sum(mem.values())
+            memsetter(mem, mask, addr, val)
+    return mem
+
+def part1(lines):
+    """
+    >>> part1(t1)
+    165
+    """
+    return sum(process(lines, part1_setter).values())
 
 t2 = [
     'mask = 000000000000000000000000000000X1001X',
@@ -52,29 +58,24 @@ def addresses(addr, mask):
     [5, 7, 13, 15]
     """
     ainb = str(bin(addr)[2:]).zfill(36)
-    c = [a if m == '0' else m for m, a in zip(mask, ainb)]
-    xs = [i for i, x in enumerate(c) if x == 'X']
-    xs.reverse() # technically doesn't matter but it feels better
-    for perm in range(0, 2 ** len(xs)):
-        for e, idx in enumerate(xs):
-            c[idx] = '1' if 2 ** e & perm else '0'
-        yield int(''.join(c), 2)
+    chars = [a if m == '0' else m for m, a in zip(mask, ainb)]
+    xlocs = [i for i, x in enumerate(chars) if x == 'X']
+    xlocs.reverse() # technically doesn't matter but it feels better
+    for perm in range(0, 2 ** len(xlocs)):
+        for p, idx in enumerate(xlocs):
+            chars[idx] = '1' if 2 ** p & perm else '0'
+        yield int(''.join(chars), 2)
+
+def part2_setter(mem, mask, addr, val):
+    for i in addresses(addr, mask):
+        mem[i] = val
 
 def part2(lines):
     """
     >>> part2(t2)
     208
     """
-    mem = {}
-    for line in lines:
-        if line[:4] == 'mask':
-            mask = line[7:]
-        if line[:3] == 'mem':
-            p = re.match(r'mem\[(\d+)\] = (\d+)', line)
-            addr = int(p[1])
-            val = int(p[2])
-            for c in addresses(addr, mask):
-                mem[c] = val
+    mem = process(lines, part2_setter)
     return sum(mem.values())
 
 def main():
