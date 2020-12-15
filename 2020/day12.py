@@ -6,21 +6,11 @@ t1 = ['F10', 'N3', 'F7', 'R90', 'F11', ]
 
 def step(state, l):
     i, arg = l[0], int(l[1:])
-    if i == 'N':
-        return (state[0], state[1] + arg, state[2])
-    if i == 'S':
-        return (state[0], state[1] - arg, state[2])
-    if i == 'E':
-        return (state[0] + arg, state[1], state[2])
-    if i == 'W':
-        return (state[0] - arg, state[1], state[2])
-    if i == 'R':
-        return (state[0], state[1], (state[2] + arg + 360) % 360)
-    if i == 'L':
-        return (state[0], state[1], (state[2] - arg + 360) % 360)
     if i == 'F':
-        a = {0: (1, 0), 90: (0, -1), 180: (-1, 0), 270: (0, 1)}[state[2]]
-        return (state[0] + a[0] * arg, state[1] + a[1] * arg, state[2])
+        m = {0: (1, 0, 0), 90: (0, -1, 0), 180: (-1, 0, 0), 270: (0, 1, 0)}[state[2]]
+    else:
+        m = {'N': (0, 1, 0), 'S': (0, -1, 0), 'E': (1, 0, 0), 'W': (-1, 0, 0), 'R': (0, 0, 1), 'L': (0, 0, -1)}[i]
+    return (state[0] + m[0] * arg, state[1] + m[1] * arg, (state[2] + m[2] * arg) % 360)
 
 def part1(lines):
     """
