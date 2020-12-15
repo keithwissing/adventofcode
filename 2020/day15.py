@@ -9,9 +9,7 @@ def part1_1(lines):
     436
     """
     spoken = [int(x) for x in lines.split(',')]
-    t = len(spoken)
-    while t < 2020:
-        t += 1
+    for _ in range(len(spoken), 2020):
         l = spoken[-1]
         hist = [i for i, x in enumerate(spoken) if x == l]
         if len(hist) < 2:
@@ -27,9 +25,8 @@ def game(line, iterations):
     """
     seed = [int(x) for x in line.split(',')]
     spoken = {x: i for i, x in enumerate(seed)}
-    t = len(spoken)
     up = 0
-    while t < iterations - 1:
+    for t in range(len(spoken), iterations - 1):
         if up in spoken:
             age = t - spoken[up]
             spoken[up] = t
@@ -37,7 +34,6 @@ def game(line, iterations):
         else:
             spoken[up] = t
             up = 0
-        t += 1
     return up
 
 def part1(lines):
