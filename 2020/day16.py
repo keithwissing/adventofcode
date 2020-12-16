@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import math
 import re
 import adventofcode
 
@@ -67,13 +68,7 @@ def part1(lines):
                 tot += v
     return tot
 
-def part2(lines):
-    """
-    >>> part2(t2)
-    1
-    """
-    fields, yours, near = parse(lines)
-    vts = []
+def valid_tickets(fields, near):
     for n in near:
         okt = True
         for v in n:
@@ -84,8 +79,9 @@ def part2(lines):
             if not ok:
                 okt = False
         if okt:
-            vts.append(n)
-    cps = []
+            yield n
+
+def column_possibilities(fields, vts):
     for col in zip(*vts):
         poss = []
         for k, f in fields.items():
@@ -95,21 +91,32 @@ def part2(lines):
                     ok = False
             if ok:
                 poss.append(k)
-        cps.append(poss)
+        yield poss
+
+def figure_labels(cps):
     labels = [''] * len(cps)
-    nl = [i for i, v in enumerate(cps) if len(v) == 1]
-    while nl:
+    while nl := [i for i, v in enumerate(cps) if len(v) == 1]:
         n = nl[0]
         labels[n] = cps[n][0]
         for p in cps:
             if labels[n] in p:
                 p.remove(labels[n])
-        nl = [i for i, v in enumerate(cps) if len(v) == 1]
-    tot = 1
-    for i, l in enumerate(labels):
-        if l[:9] == 'departure':
-            tot *= yours[i]
-    return tot
+    return labels
+
+def part2(lines, return_labels=False):
+    """
+    >>> part2(t1, True)
+    ['row', 'class', 'seat']
+    >>> part2(t2, True)
+    ['row', 'class', 'seat']
+    """
+    fields, yours, near = parse(lines)
+    vts = valid_tickets(fields, near)
+    cps = list(column_possibilities(fields, vts))
+    labels = figure_labels(cps)
+    if return_labels:
+        return labels
+    return math.prod(yours[i] for i, l in enumerate(labels) if l[:9] == 'departure')
 
 def main():
     puzzle_input = adventofcode.read_input(16)
