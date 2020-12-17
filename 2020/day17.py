@@ -10,20 +10,12 @@ t1 = [
     '###',
 ]
 
-def parse(lines):
+def parse(lines, dims=3):
     grid = defaultdict(lambda: 0)
     for y, line in enumerate(lines):
         for x, val in enumerate(line):
             if val == '#':
-                grid[(x, y, 0)] = 1
-    return grid
-
-def parse2(lines):
-    grid = defaultdict(lambda: 0)
-    for y, line in enumerate(lines):
-        for x, val in enumerate(line):
-            if val == '#':
-                grid[(x, y, 0, 0)] = 1
+                grid[tuple([x, y] + [0] * (dims - 2))] = 1
     return grid
 
 def adjacent(pos):
@@ -67,25 +59,25 @@ def iterate(grid):
             ng[pos] = 1
     return ng
 
+def solve(lines, dims=3):
+    grid = parse(lines, dims)
+    for _ in range(6):
+        grid = iterate(grid)
+    return sum(grid.values())
+
 def part1(lines):
     """
     >>> part1(t1)
     112
     """
-    grid = parse(lines)
-    for _ in range(6):
-        grid = iterate(grid)
-    return sum(grid.values())
+    return solve(lines, 3)
 
 def part2(lines):
     """
     >>> part2(t1)
     848
     """
-    grid = parse2(lines)
-    for _ in range(6):
-        grid = iterate(grid)
-    return sum(grid.values())
+    return solve(lines, 4)
 
 def main():
     puzzle_input = adventofcode.read_input(17)
