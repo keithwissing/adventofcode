@@ -48,9 +48,8 @@ def adjacent4(pos):
 
 def iterate(grid):
     ng = defaultdict(lambda: 0)
-    mins = list(map(lambda x: x - 1, map(min, zip(*grid.keys()))))
-    maxs = list(map(lambda x: x + 2, map(max, zip(*grid.keys()))))
-    ranges = map(lambda t: range(t[0], t[1]), zip(mins, maxs))
+    limits = [(min(c) - 1, max(c) + 2) for c in zip(*grid.keys())]
+    ranges = map(lambda t: range(t[0], t[1]), limits)
     for pos in product(*ranges):
         nc = sum(grid[tp] for tp in adjacent(pos))
         if grid[pos] == 1 and nc in [2, 3]:
