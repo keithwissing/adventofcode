@@ -7,19 +7,19 @@ def proc(line, start):
     This was a really stupid way to do this
     """
     if line[start] == '(':
-        tot, c = proc(line, start+1)
+        tot, c = proc(line, start + 1)
         pos = start + c + 2
     else:
         tot = int(line[start])
-        pos = start+1
+        pos = start + 1
     while pos < len(line):
         op = line[pos]
         if op == ')':
             return (tot, pos - start)
-        if line[pos+1] == '(':
+        if line[pos + 1] == '(':
             v, c = proc(line, pos + 2)
         else:
-            v, c = int(line[pos+1]), -1
+            v, c = int(line[pos + 1]), -1
         if op == '+':
             tot += v
         if op == '*':
@@ -43,10 +43,55 @@ def calculate1(line):
     13632
     """
     line = line.replace(' ', '')
-    v, _ = proc(line, 0)
-    return v
+    v1, _ = proc(line, 0)
+    v2 = calculate2(line, as_they_come)
+    assert v1 == v2
+    return v1
 
-def calculate2(line):
+def add_first(o1, o2):
+    return o2 == '+' and o1 == '*'
+
+def as_they_come(*_):
+    return True
+
+def convert_to_rpn(line, precedence):
+    """
+    Looked up and used algorithm from:
+    https://en.wikipedia.org/wiki/Shunting-yard_algorithm#The_algorithm_in_detail
+    """
+    out = []
+    op = []
+    for t in line.replace(' ', ''):
+        if t not in '+*()':
+            out.append(t)
+        elif t in '+*':
+            while op and precedence(t, op[-1]) and op[-1] != '(':
+                out.append(op.pop())
+            op.append(t)
+        elif t == '(':
+            op.append(t)
+        elif t == ')':
+            while op[-1] != '(':
+                out.append(op.pop())
+            if op and op[-1] == '(':
+                op.pop()
+    while op:
+        out.append(op.pop())
+    return out
+
+def evaluate_rpn(out):
+    stack = []
+    while out:
+        op = out.pop(0)
+        if op == '+':
+            stack.append(stack.pop() + stack.pop())
+        elif op == '*':
+            stack.append(stack.pop() * stack.pop())
+        else:
+            stack.append(int(op))
+    return stack[0]
+
+def calculate2(line, precedence=add_first):
     """
     >>> calculate2('1 + 2 * 3 + 4 * 5 + 6')
     231
@@ -60,49 +105,21 @@ def calculate2(line):
     669060
     >>> calculate2('((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2')
     23340
-
-    Looked up and used algorithm from:
-    https://en.wikipedia.org/wiki/Shunting-yard_algorithm#The_algorithm_in_detail
     """
-    out = []
-    op = []
-    for t in line.replace(' ', ''):
-        if t not in '+*()':
-            out.append(t)
-        elif t in '+*':
-            while op and (t == '*' and op[-1] == '+') and op[-1] != '(':
-                out.append(op.pop())
-            op.append(t)
-        elif t == '(':
-            op.append(t)
-        elif t == ')':
-            while op[-1] != '(':
-                out.append(op.pop())
-            if op and op[-1] == '(':
-                op.pop()
-    while op:
-        out.append(op.pop())
-    stack = []
-    while out:
-        op = out.pop(0)
-        if op == '+':
-            stack.append(stack.pop() + stack.pop())
-        elif op == '*':
-            stack.append(stack.pop() * stack.pop())
-        else:
-            stack.append(int(op))
-    return stack[0]
+    out = convert_to_rpn(line, precedence)
+    return evaluate_rpn(out)
 
 def part1(lines):
     tot = 0
     for line in lines:
-        tot += calculate1(line)
+        # tot += calculate1(line)
+        tot += calculate2(line, as_they_come)
     return tot
 
 def part2(lines):
     tot = 0
     for line in lines:
-        tot += calculate2(line)
+        tot += calculate2(line, add_first)
     return tot
 
 def main():
