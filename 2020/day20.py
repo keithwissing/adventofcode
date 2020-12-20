@@ -148,9 +148,6 @@ def rotate(grid):
         ret.append(''.join([r[x] for r in grid]))
     return ret
 
-def printg(grid):
-    print('\n'.join(grid))
-
 def calc_edge_ids(grid):
     top = int(''.join(['0' if c == '.' else '1' for c in grid[0]]), 2)
     bottom = int(''.join(['0' if c == '.' else '1' for c in grid[9]]), 2)
@@ -171,15 +168,15 @@ def part1(lines):
     return corners[0] * corners[1] * corners[2] * corners[3]
 
 def upper_left(all_edges, grid):
-    t, b, l, r = calc_edge_ids(grid)
+    t, _, l, _ = calc_edge_ids(grid)
     return t not in all_edges and l not in all_edges
 
 def left_is(goal, grid):
-    t, b, l, r = calc_edge_ids(grid)
+    _, _, l, _ = calc_edge_ids(grid)
     return l == goal
 
 def top_is(goal, grid):
-    t, b, l, r = calc_edge_ids(grid)
+    t, _, _, _ = calc_edge_ids(grid)
     return t == goal
 
 def orient(grid, match_func):
@@ -193,6 +190,49 @@ def orient(grid, match_func):
             return grid
         grid = rotate(grid)
     raise 'Did not find orientation match'
+
+def find_and_orient_pieces(tiles):
+    edges = {idn: calc_edge_ids(tile) + calc_edge_ids(flip_h(flip_v(tile))) for idn, tile in tiles.items()}
+
+    corners = get_corner_idns(edges)
+    cidn = corners[0] # does not matter which corner piece we start with
+
+    size = int(math.sqrt(len(tiles)))
+    pieces = [[None] * size for _ in range(size)]
+    ids = [[None] * size for _ in range(size)]
+
+    edges_minus_corner = set(i for k, e in edges.items() if k != cidn for i in e)
+    uppper_left = orient(tiles[cidn], lambda g: upper_left(edges_minus_corner, g))
+
+    pieces[0][0] = uppper_left
+    ids[0][0] = cidn
+    used = set([cidn])
+
+    for col in range(1, size):
+        left = calc_edge_ids(pieces[0][col - 1])[3] # right from tile to the left
+        tidn = [i for i, e in edges.items() if left in e and i not in used][0]
+        grid = orient(tiles[tidn], lambda g, l=left: left_is(l, g))
+        pieces[0][col] = grid
+        ids[0][col] = tidn
+        used.add(tidn)
+
+    for row in range(1, size):
+        for col in range(0, size):
+            top = calc_edge_ids(pieces[row - 1][col])[1] # bottom from tile above
+            tidn = [i for i, e in edges.items() if top in e and i not in used][0]
+            grid = orient(tiles[tidn], lambda g, t=top: top_is(t, g))
+            pieces[row][col] = grid
+            ids[row][col] = tidn
+            used.add(tidn)
+
+    return pieces
+
+def image_from_pieces(pieces):
+    image = []
+    for row in range(0, len(pieces)):
+        for r in range(1, 9):
+            image.append(''.join([pieces[row][x][r][1:-1] for x in range(0, len(pieces[row]))]))
+    return image
 
 monster = [
     '                  # ',
@@ -213,77 +253,17 @@ def find_monsters(image):
 
 def part2(lines):
     """
-    # >>> part2(t1)
-    # 273
+    >>> part2(t1)
+    273
     """
     tiles = parse(lines)
-    edges = {}
-    for idn, tile in tiles.items():
-        edges[idn] = calc_edge_ids(tile) + calc_edge_ids(flip_h(flip_v(tile)))
-
-    corners = get_corner_idns(edges)
-    cidn = corners[0]
-
-    for idn, es in edges.items():
-        o = set()
-        for k, e in edges.items():
-            if k == cidn:
-                continue
-            o.update(e)
-    # print('aaa ', ' '.join([str(x) if x in o else 'x' for x in edges[cidn]]))
-
-    size = int(math.sqrt(len(tiles)))
-    pieces = [[None] * size for _ in range(size)]
-    ids = [[None] * size for _ in range(size)]
-
-    used = set([cidn])
-
-    ul = orient(tiles[cidn], lambda g: upper_left(o, g))
-    pieces[0][0] = ul
-    ids[0][0] = cidn
-    for col in range(1, size):
-        left = calc_edge_ids(pieces[0][col - 1])[3]
-        tidn = [i for i, e in edges.items() if left in e and i not in used][0]
-        grid = tiles[tidn]
-        grid = orient(grid, lambda g, l=left: left_is(l, g))
-        pieces[0][col] = grid
-        ids[0][col] = tidn
-        used.add(tidn)
-
-    for row in range(1, size):
-        for col in range(0, size):
-            top = calc_edge_ids(pieces[row - 1][col])[1]
-            tidn = [i for i, e in edges.items() if top in e and i not in used][0]
-            grid = tiles[tidn]
-            grid = orient(grid, lambda g, t=top: top_is(t, g))
-            pieces[row][col] = grid
-            ids[row][col] = tidn
-            used.add(tidn)
-
-    # print(len(used), len(tiles))
-
-    # for row in range(0, size):
-    #     for r in range(0, 10):
-    #         print(' '.join([pieces[row][x][r] for x in range(0, size)]))
-    #     print()
-
-    # print(ids)
-
-    image = []
-    for row in range(0, size):
-        for r in range(1, 9):
-            image.append(''.join([pieces[row][x][r][1:-1] for x in range(0, size)]))
-
-    # print('\n'.join(image))
-
+    pieces = find_and_orient_pieces(tiles)
+    image = image_from_pieces(pieces)
     image = orient(image, lambda g: find_monsters(g) != 0)
-
     found = find_monsters(image)
-    seas = sum(1 for y,x in itertools.product(range(len(image)), range(len(image[0]))) if image[y][x] == '#')
-    msize = sum(1 for y,x in itertools.product(range(len(monster)), range(len(monster[0]))) if monster[y][x] == '#')
-    a = seas - found * msize
-    # print(found, a)
-    return a
+    seas = sum(x.count('#') for x in image)
+    msize = sum(x.count('#') for x in monster)
+    return seas - found * msize
 
 def main():
     puzzle_input = adventofcode.read_input(20)
