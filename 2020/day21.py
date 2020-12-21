@@ -23,11 +23,8 @@ def part1(lines):
     5
     """
     foods = parse(lines)
-    all_allergens = set()
-    all_ingredients = set()
-    for f in foods:
-        all_ingredients.update(f[0])
-        all_allergens.update(f[1])
+    all_ingredients = set(a for f in foods for a in f[0])
+    all_allergens = set(a for f in foods for a in f[1])
     safe = set(all_ingredients)
     for a in all_allergens:
         p = set(all_ingredients)
@@ -35,10 +32,7 @@ def part1(lines):
             if a in f[1]:
                 p &= set(f[0])
         safe = safe.difference(p)
-    tot = 0
-    for f in foods:
-        tot += len(set(f[0]).intersection(safe))
-    return tot
+    return sum(len(set(f[0]).intersection(safe)) for f in foods)
 
 def part2(lines):
     """
@@ -46,11 +40,8 @@ def part2(lines):
     'mxmxvkd,sqjhc,fvjkl'
     """
     foods = parse(lines)
-    all_allergens = set()
-    all_ingredients = set()
-    for f in foods:
-        all_ingredients.update(f[0])
-        all_allergens.update(f[1])
+    all_ingredients = set(a for f in foods for a in f[0])
+    all_allergens = set(a for f in foods for a in f[1])
     safe = set(all_ingredients)
     for a in all_allergens:
         p = set(all_ingredients)
@@ -58,13 +49,10 @@ def part2(lines):
             if a in f[1]:
                 p &= set(f[0])
         safe = safe.difference(p)
-    tot = 0
+
     for f in foods:
-        tot += len(set(f[0]).intersection(safe))
-    for f in foods:
-        for i in safe:
-            if i in f[0]:
-                f[0].remove(i)
+        f[0] = [x for x in f[0] if x not in safe]
+
     danger = all_ingredients.difference(safe)
     could = {}
     for a in all_allergens:
@@ -72,18 +60,18 @@ def part2(lines):
         for f in foods:
             if a in f[1]:
                 p = p.intersection(f[0])
-        could[a] = p
+        could[a] = list(p)
     changed = True
     while changed:
         changed = False
         for k, vs in could.items():
             if len(vs) == 1:
-                for v in vs:
-                    for k2, v2 in could.items():
-                        if k != k2 and v in v2:
-                            v2.remove(v)
-                            could[k2] = v2
-                            changed = True
+                v = vs[0]
+                for k2, v2 in could.items():
+                    if k != k2 and v in v2:
+                        v2.remove(v)
+                        could[k2] = v2
+                        changed = True
     a = ','.join(could[k].pop() for k in sorted(could.keys()))
     return a
 
