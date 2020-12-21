@@ -38,19 +38,24 @@ def find_possible_ingredients_for_allergens(foods, all_allergens, danger):
     return could
 
 def reduce_possibilities(could):
+    """
+    Takes a dict of keys to lists and returns a dict of keys to the item unique to each list
+
+    >>> reduce_possibilities({'one': [1,2], 'two': [2]})
+    {'two': 2, 'one': 1}
+    """
     remaining = {k: v[:] for k, v in could.items()}  # don't change the input
-    changed = True
-    while changed:
-        changed = False
-        for k, vs in remaining.items():
-            if len(vs) == 1:
-                v = vs[0]
-                for k2, v2 in remaining.items():
-                    if k != k2 and v in v2:
-                        v2.remove(v)
-                        remaining[k2] = v2
-                        changed = True
-    return {k: vs.pop() for k, vs in remaining.items()}
+    known = {k:v[0] for k, v in remaining.items() if len(v) == 1}
+    toremove = set(known.values())
+    while toremove:
+        r = toremove.pop()
+        for k, vl in remaining.items():
+            if r in vl:
+                vl.remove(r)
+                if len(vl) == 1:
+                    known[k] = vl[0]
+                    toremove.add(vl[0])
+    return known
 
 def part1(lines):
     """
