@@ -2,40 +2,21 @@
 
 import adventofcode
 
-t1 = [
-    199,
-    200,
-    208,
-    210,
-    200,
-    207,
-    240,
-    269,
-    260,
-    263,
-]
+t1 = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263]
 
 def part1(lines):
     """
     >>> part1(t1)
     7
     """
-    count = 0
-    for i, v in enumerate(lines):
-        if i > 0 and v > lines[i-1]:
-            count += 1
-    return count
+    return sum([1 for i in range(1, len(lines)) if lines[i] > lines[i - 1]])
 
 def part2(lines):
     """
     >>> part2(t1)
     5
     """
-    count = 0
-    for i in range(2, len(lines)-1):
-        if sum(lines[i-1:i+2]) > sum(lines[i-2:i+1]):
-            count += 1
-    return count
+    return sum([1 for i in range(2, len(lines) - 1) if sum(lines[i - 1:i + 2]) > sum(lines[i - 2:i + 1])])
 
 def main():
     puzzle_input = adventofcode.read_input(1)
