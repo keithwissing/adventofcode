@@ -43,10 +43,7 @@ def find_value(lines, val):
     pos = 0
     while len(remaining) > 1:
         ones = sum([1 for l in remaining if l[pos] == '1'])
-        if val:
-            target = 1 if ones >= len(remaining) / 2 else 0
-        else:
-            target = 0 if ones >= len(remaining) / 2 else 1
+        target = val if ones >= len(remaining) / 2 else 1 - val
         remaining = [l for l in remaining if l[pos] == str(target)]
         pos += 1
     return int(''.join(remaining[0]), base=2)
