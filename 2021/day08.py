@@ -26,6 +26,10 @@ def part1(lines):
     return count
 
 def sort_leters_in_words(words):
+    """
+    >>> sort_leters_in_words(['zma', 'alphabet'])
+    ['amz', 'aabehlpt']
+    """
     for i, v in enumerate(words):
         t = [c for c in v]
         t.sort()
@@ -33,6 +37,12 @@ def sort_leters_in_words(words):
     return words
 
 def all_in(src, dst):
+    """
+    >>> all_in('abeg', 'abcdefg')
+    True
+    >>> all_in('abcdefg', 'abeg')
+    False
+    """
     return all([x in list(dst) for x in list(src)])
 
 def i_of_len(pre, l):
