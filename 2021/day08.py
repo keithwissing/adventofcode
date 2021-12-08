@@ -25,6 +25,19 @@ def part1(lines):
         count += sum([1 for x in line.split('|')[1].split() if len(x) in [2, 4, 3, 7]])
     return count
 
+def sort_leters_in_words(words):
+    for i, v in enumerate(words):
+        t = [c for c in v]
+        t.sort()
+        words[i] = ''.join(t)
+    return words
+
+def all_in(src, dst):
+    return all([x in list(dst) for x in list(src)])
+
+def i_of_len(pre, l):
+    return [i for i, x in enumerate(pre) if len(x) == l]
+
 def decode(line):
     """
     >>> decode('acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf')
@@ -35,45 +48,38 @@ def decode(line):
     9781
     """
     pre, post = line.split('|')
-    pre = pre.split()
-    for i, v in enumerate(pre):
-        t = [c for c in v]
-        t.sort()
-        pre[i] = ''.join(t)
-    post = post.split()
-    for i, v in enumerate(post):
-        t = [c for c in v]
-        t.sort()
-        post[i] = ''.join(t)
+    pre = sort_leters_in_words(pre.split())
+    post = sort_leters_in_words(post.split())
     match = [None] * 10
-    oo = [i for i, x in enumerate(pre) if len(x) == 2][0]
-    match[oo] = 1
-    oo = [i for i, x in enumerate(pre) if len(x) == 4][0]
-    match[oo] = 4
-    oo = [i for i, x in enumerate(pre) if len(x) == 3][0]
-    match[oo] = 7
-    oo = [i for i, x in enumerate(pre) if len(x) == 7][0]
-    match[oo] = 8
-    for oo in [i for i, x in enumerate(pre) if len(x) == 5]:
-        qq = match.index(1)
-        if all([x in list(pre[oo]) for x in list(pre[qq])]):
-            match[oo] = 3
-    for oo in [i for i, x in enumerate(pre) if len(x) == 6]:
-        qq = match.index(1)
-        if not all([x in list(pre[oo]) for x in list(pre[qq])]):
-            match[oo] = 6
-        qq = match.index(3)
-        if all([x in list(pre[oo]) for x in list(pre[qq])]):
-            match[oo] = 9
-        if not match[oo]:
-            match[oo] = 0
-    for oo in [i for i, x in enumerate(pre) if len(x) == 5]:
-        if not match[oo]:
-            qq = match.index(9)
-            if all([x in list(pre[qq]) for x in list(pre[oo])]):
-                match[oo] = 5
+
+    # find the digits that can only be one value based on length
+    for l, v in [(2, 1), (4, 4), (3, 7), (7, 8)]:
+        i = i_of_len(pre, l)[0]
+        match[i] = v
+    known_1 = pre[match.index(1)]
+
+    # 3 is the only 5 segment number with all the segments in 1
+    for i in i_of_len(pre, 5):
+        if all_in(known_1, pre[i]):
+            match[i] = 3
+    known_3 = pre[match.index(3)]
+
+    for i in i_of_len(pre, 6):
+        if not all_in(known_1, pre[i]):
+            match[i] = 6
+        elif all_in(known_3, pre[i]):
+            match[i] = 9
+        else:
+            match[i] = 0
+    known_9 = pre[match.index(9)]
+
+    for i in i_of_len(pre, 5):
+        if not match[i]:
+            if all_in(pre[i], known_9):
+                match[i] = 5
             else:
-                match[oo] = 2
+                match[i] = 2
+
     v = 0
     for x in post:
         v *= 10
