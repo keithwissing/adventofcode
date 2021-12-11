@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import heapq
-from itertools import product
+from itertools import product, repeat, takewhile
 import adventofcode
 
 t1 = [
@@ -53,11 +53,8 @@ def part1(lines):
     >>> part1(t1)
     1656
     """
-    count = 0
     grid = parse(lines)
-    for _ in range(100):
-        count += iterate(grid)
-    return count
+    return sum(iterate(grid) for _ in range(100))
 
 def part2(lines):
     """
@@ -65,12 +62,7 @@ def part2(lines):
     195
     """
     grid = parse(lines)
-    f = 0
-    count = 0
-    while f != 100:
-        f = iterate(grid)
-        count += 1
-    return count
+    return sum(takewhile(lambda _: iterate(grid) != 100, repeat(1))) + 1
 
 def main():
     puzzle_input = adventofcode.read_input(11)
