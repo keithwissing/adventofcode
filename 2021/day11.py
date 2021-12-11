@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import heapq
+from itertools import product
 import adventofcode
 
 t1 = [
@@ -20,35 +21,32 @@ def parse(lines):
     return [[int(c) for c in r] for r in lines]
 
 def adjacent(pos):
-    for dy in range(-1, 2):
-        for dx in range(-1, 2):
-            if dx != 0 or dy != 0:
-                yield (pos[0] + dx, pos[1] + dy)
+    for dy, dx in product(range(-1, 2), range(-1, 2)):
+        if dx != 0 or dy != 0:
+            yield (pos[0] + dx, pos[1] + dy)
+
+def increase(grid, q, pos):
+    x, y = pos
+    if x >= 0 and y >= 0 and x < 10 and y < 10 and grid[y][x] < 10:
+        grid[y][x] += 1
+        if grid[y][x] == 10:
+            for p in adjacent((x, y)):
+                heapq.heappush(q, p)
+            return 1
+    return 0
 
 def iterate(grid):
     q = []
     f = 0
-    for y in range(10):
-        for x in range(10):
-            grid[y][x] += 1
-            if grid[y][x] == 10:
-                f += 1
-                for p in adjacent((x, y)):
-                    heapq.heappush(q, p)
+    for y, x in product(range(10), range(10)):
+        f += increase(grid, q, (x, y))
     while q:
         pos = heapq.heappop(q)
-        if pos[0] >= 0 and pos[1] >= 0 and pos[0] < 10 and pos[1] < 10:
-            if grid[pos[1]][pos[0]] < 10:
-                grid[pos[1]][pos[0]] += 1
-                if grid[pos[1]][pos[0]] == 10:
-                    f += 1
-                    for p in adjacent((pos[0], pos[1])):
-                        heapq.heappush(q, p)
-    for y in range(10):
-        for x in range(10):
-            if grid[y][x] == 10:
-                grid[y][x] = 0
-    return grid, f
+        f += increase(grid, q, pos)
+    for y, x in product(range(10), range(10)):
+        if grid[y][x] == 10:
+            grid[y][x] = 0
+    return f
 
 def part1(lines):
     """
@@ -58,8 +56,7 @@ def part1(lines):
     count = 0
     grid = parse(lines)
     for _ in range(100):
-        grid, f = iterate(grid)
-        count += f
+        count += iterate(grid)
     return count
 
 def part2(lines):
@@ -71,7 +68,7 @@ def part2(lines):
     f = 0
     count = 0
     while f != 100:
-        grid, f = iterate(grid)
+        f = iterate(grid)
         count += 1
     return count
 
