@@ -29,45 +29,34 @@ def parse(lines):
     for line in lines:
         x = line.split('-')
         yield (x[0], x[1])
+        yield (x[1], x[0])
 
-count = 0
-
-def step(links, visits, path, pos):
+def step(links, path, pos, paths):
     if pos == 'end':
-        global count
-        count += 1
-    ch = [x[0] for x in links if x[1] == pos]
-    ch.extend([x[1] for x in links if x[0] == pos])
-    ch = set(ch)
-    for m in ch:
-        if m not in visits:
-            v = set(visits)
-            if m.islower():
-                v.add(m)
-            step(links, v, path[:] + [m], m)
-
-paths = set()
-
-def step2(links, visits, twice, path, pos):
-    if pos == 'end':
-        global paths
         paths.add('|'.join(path))
         return
-    ch = [x[0] for x in links if x[1] == pos]
-    ch.extend([x[1] for x in links if x[0] == pos])
-    ch = set(ch)
+    ch = set([x[1] for x in links if x[0] == pos])
+    for m in ch:
+        if m.isupper() or m not in path:
+            step(links, path[:] + [m], m, paths)
+
+def step2(links, visits, twice, path, pos, paths):
+    if pos == 'end':
+        paths.add('|'.join(path))
+        return
+    ch = set([x[1] for x in links if x[0] == pos])
     for m in ch:
         if m not in visits:
             v = set(visits)
-            if m.islower() and twice != '':
+            if m.islower() and twice:
                 v.add(m)
-                step2(links, v, twice, path[:] + [m], m)
+                step2(links, v, twice, path[:] + [m], m, paths)
             elif m.islower():
-                step2(links, v, m, path[:] + [m], m)
+                step2(links, v, True, path[:] + [m], m, paths)
                 v.add(m)
-                step2(links, v, twice, path[:] + [m], m)
+                step2(links, v, False, path[:] + [m], m, paths)
             else:
-                step2(links, v, twice, path[:] + [m], m)
+                step2(links, v, twice, path[:] + [m], m, paths)
 
 def part1(lines):
     """
@@ -77,10 +66,9 @@ def part1(lines):
     19
     """
     links = list(parse(lines))
-    global count
-    count = 0
-    step(links, set(['start']), ['start'], 'start')
-    return count
+    paths = set()
+    step(links, ['start'], 'start', paths)
+    return len(paths)
 
 def part2(lines):
     """
@@ -90,9 +78,8 @@ def part2(lines):
     103
     """
     links = list(parse(lines))
-    global paths
     paths = set()
-    step2(links, set(['start']), '', ['start'], 'start')
+    step2(links, set(['start']), False, ['start'], 'start', paths)
     return len(paths)
 
 def main():
