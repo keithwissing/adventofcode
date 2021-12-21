@@ -58,13 +58,13 @@ def part2(lines):
         player = (state[5] + 1) % 2
         for rv in range(3, 10):
             s = list(state)
-            s[5] = player
+            s[0] *= freq[rv]
             s[player + 1] = (s[player + 1] + rv) % 10
             s[player + 3] += s[player + 1] + 1
+            s[5] = player
             if s[player + 3] >= 21:
-                wins[player] += s[0] * freq[rv]
+                wins[player] += s[0]
             else:
-                s[0] *= freq[rv]
                 heapq.heappush(q, tuple(s))
     return max(wins)
 
