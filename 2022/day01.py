@@ -4,36 +4,33 @@ from itertools import takewhile
 import adventofcode
 
 t1 = [
-
+    '1000', '2000', '3000', '',
+    '4000', '',
+    '5000', '6000', '',
+    '7000', '8000', '9000', '',
+    '10000',
 ]
+
+def groups(lines):
+    pos = 0
+    while pos < len(lines):
+        group = list(takewhile(lambda x: x, lines[pos:]))
+        pos += len(group) + 1
+        yield group
 
 def part1(lines):
     """
     >>> part1(t1)
-    0
+    24000
     """
-    ret = 0
-    pos = 0
-    while pos < len(lines):
-        carry = list(takewhile(lambda x: x, lines[pos:]))
-        total = sum(int(x) for x in carry)
-        if total > ret:
-            ret = total
-        pos += len(carry) + 1
-    return ret
+    return max(sum(int(x) for x in carry) for carry in groups(lines))
 
 def part2(lines):
     """
     >>> part2(t1)
-    0
+    45000
     """
-    vals = []
-    pos = 0
-    while pos < len(lines):
-        carry = list(takewhile(lambda x: x, lines[pos:]))
-        vals.append(sum(int(x) for x in carry))
-        pos += len(carry) + 1
-    return sum(list(reversed(sorted(vals)))[:3])
+    return sum(sorted(sum(int(x) for x in carry) for carry in groups(lines))[-3:])
 
 def main():
     puzzle_input = adventofcode.read_input(1)

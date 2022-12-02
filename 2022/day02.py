@@ -8,20 +8,23 @@ t1 = [
     'C Z',
 ]
 
-def translate(c):
-    return {'A': 'R', 'B': 'P', 'C': 'S', 'X': 'R', 'Y': 'P', 'Z': 'S'}[c]
+def to_number(c):
+    return 'ABCXYZRPS'.index(c) % 3
 
 def outcome(i):
-    if ''.join(i) in ['SR', 'RP', 'PS']:
-        return 'win'
-    if i[0] == i[1]:
-        return 'draw'
-    return 'loss'
+    return [3, 6, 0][(to_number(i[1]) - to_number(i[0]) + 3) % 3]
 
 def score(line):
-    i = [translate(c) for c in line.split()]
-    o = outcome(i)
-    return 1 + 'RPS'.index(i[1]) + {'loss': 0, 'draw': 3, 'win': 6}[o]
+    i = line.split()
+    return 1 + to_number(i[1]) + outcome(i)
+
+def my_play(i):
+    return 'RPS'[('ABC'.index(i[0]) + 'XYZ'.index(i[1]) - 1) % 3]
+
+def score_2(line):
+    i = line.split()
+    i[1] = my_play(i)
+    return 1 + to_number(i[1]) + outcome(i)
 
 def part1(lines):
     """
@@ -29,16 +32,6 @@ def part1(lines):
     15
     """
     return sum(score(line) for line in lines)
-
-def my_play(i):
-    return 'RPS'[('RPS'.index(i[0]) + 'XYZ'.index(i[1]) - 1) % 3]
-
-def score_2(line):
-    i = line.split()
-    i[0] = translate(i[0])
-    i[1] = my_play(i)
-    o = outcome(i)
-    return 1 + 'RPS'.index(i[1]) + {'loss': 0, 'draw': 3, 'win': 6}[o]
 
 def part2(lines):
     """
