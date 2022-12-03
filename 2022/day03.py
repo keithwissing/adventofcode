@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from functools import reduce
+from string import ascii_letters
 
 import adventofcode
 
@@ -12,9 +14,7 @@ t1 = [
 ]
 
 def priority(c):
-    if 'a' <= c <= 'z':
-        return ord(c) - ord('a') + 1
-    return ord(c) - ord('A') + 26 + 1
+    return ascii_letters.index(c) + 1
 
 def in_both_compartments(line):
     f = set([c for c in line[:(len(line) // 2)]])
@@ -29,10 +29,8 @@ def part1(lines):
     return sum(priority(in_both_compartments(line)) for line in lines)
 
 def badge(lines):
-    x = set(c for c in lines[0])
-    y = set(c for c in lines[1])
-    z = set(c for c in lines[2])
-    return x.intersection(y).intersection(z).pop()
+    s = [set(c for c in line) for line in lines]
+    return reduce(lambda x, y: x.intersection(y), s).pop()
 
 def groups_of_three(lines):
     for p in range(0, len(lines), 3):
