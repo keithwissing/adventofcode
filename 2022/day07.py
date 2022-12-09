@@ -53,14 +53,7 @@ def parse(lines):
     return dirs, files
 
 def dir_sizes(dirs, files):
-    dsizes = []
-    for d in dirs:
-        ts = 0
-        for f in files:
-            if f[0].startswith(d):
-                ts += f[2]
-        dsizes.append((d, ts))
-    return dsizes
+    return [(d, sum(f[2] for f in files if f[0].startswith(d))) for d in dirs]
 
 def part1(lines):
     """
@@ -79,7 +72,7 @@ def part2(lines):
     dirs, files = parse(lines)
     dsizes = dir_sizes(dirs, files)
     disk_size = 70000000
-    used_space = [d[1] for d in dsizes if d[0] == '/'][0]
+    used_space = next(d[1] for d in dsizes if d[0] == '/')
     return min([d[1] for d in dsizes if disk_size - used_space + d[1] >= 30000000])
 
 def main():
