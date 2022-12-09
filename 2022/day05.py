@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from itertools import groupby
 
 import adventofcode
 
@@ -14,26 +15,16 @@ t1 = [
     'move 1 from 1 to 2',
 ]
 
-def split_on_blanks(lines):
-    last, pos = 0, 0
-    try:
-        while True:
-            pos = lines.index('', last)
-            yield lines[last:pos]
-            last = pos + 1
-    except ValueError:
-        yield lines[last:]
+def split_on_blank_lines(lines):
+    yield from [list(sub) for ele, sub in groupby(lines, key=bool) if ele]
 
 def parse(lines):
-    stacks, moves = split_on_blanks(lines)
+    stacks, moves = split_on_blank_lines(lines)
+
     n = len(stacks[-1].split())
-    q = [[] for i in range(n)]
-    for p in range(len(stacks) - 1, 0, -1):
-        line = stacks[p - 1]
-        for x in range(n):
-            c = line[4 * x + 1] if 4 * x + 1 < len(line) else ' '
-            if c and c != ' ':
-                q[x].append(c)
+    crates = [[x.strip() for i, x in enumerate(line) if (i - 1) % 4 == 0] for line in stacks[-2::-1]]
+    q = [[r[col] for r in crates if col < len(r) and r[col]] for col in range(n)]
+
     moves = [x.split() for x in moves]
     moves = [[int(y) for i, y in enumerate(r) if i % 2 == 1] for r in moves]
     return q, moves
