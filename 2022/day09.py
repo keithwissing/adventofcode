@@ -24,49 +24,38 @@ t2 = [
     'U 20',
 ]
 
+def sign(x):
+    return 1 if x > 0 else -1 if x < 0 else 0
+
 def pull(h, t):
     diff = tuple(x - y for x, y in zip(h, t))
-    moves = {(0, 2): (0, 1),
-             (1, 2): (1, 1),
-             (2, 2): (1, 1),
-             (2, 1): (1, 1),
-             (2, 0): (1, 0),
-             (2, -1): (1, -1),
-             (2, -2): (1, -1),
-             (1, -2): (1, -1),
-             (0, -2): (0, -1),
-             (-1, -2): (-1, -1),
-             (-2, -2): (-1, -1),
-             (-2, -1): (-1, -1),
-             (-2, 0): (-1, 0),
-             (-2, 1): (-1, 1),
-             (-2, 2): (-1, 1),
-             (-1, 2): (-1, 1)}
-    return tuple(x + y for x, y in zip(t, moves[diff])) if diff in moves else t
+    if max(abs(x) for x in diff) == 2:
+        delta = tuple(sign(x) for x in diff)
+        return tuple(x + y for x, y in zip(t, delta))
+    return t
 
 def move(h, d):
     delta = {'R': (1, 0), 'L': (-1, 0), 'U': (0, 1), 'D': (0, -1)}[d]
     return tuple(x + y for x, y in zip(h, delta))
 
-def step(h, t, d):
-    nh = move(h, d)
-    return nh, pull(nh, t)
+def generalized(lines, rope_length):
+    knots = [(0, 0)] * rope_length
+    visited = {(0, 0)}
+    for line in lines:
+        d, r = line.split()
+        for _ in range(int(r)):
+            knots[0] = move(knots[0], d)
+            for i in range(rope_length - 1):
+                knots[i + 1] = pull(knots[i], knots[i + 1])
+            visited.add(knots[rope_length - 1])
+    return len(visited)
 
 def part1(lines):
     """
     >>> part1(t1)
     13
     """
-    h = t = (0, 0)
-    visited = {t}
-    for line in lines:
-        d, r = line.split()
-        for _ in range(int(r)):
-            h, t = step(h, t, d)
-            visited.add(t)
-            # print(h, t)
-    # print(visited)
-    return len(visited)
+    return generalized(lines, 2)
 
 def part2(lines):
     """
@@ -75,16 +64,7 @@ def part2(lines):
     >>> part2(t2)
     36
     """
-    knots = [(0, 0)] * 10
-    visited = {(0, 0)}
-    for line in lines:
-        d, r = line.split()
-        for _ in range(int(r)):
-            knots[0] = move(knots[0], d)
-            for i in range(9):
-                knots[i + 1] = pull(knots[i], knots[i + 1])
-            visited.add(knots[9])
-    return len(visited)
+    return generalized(lines, 10)
 
 def main():
     puzzle_input = adventofcode.read_input(9)
