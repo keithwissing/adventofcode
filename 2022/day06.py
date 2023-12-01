@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-from collections import Counter
 
 import adventofcode
 
 def search(line, u):
     for p in range(len(line)):
-        if max(Counter(line[p:p + u]).values()) == 1:
+        # if max(Counter(line[p:p + u]).values()) == 1:
+        if len(set(line[p:p + u])) == u:
             return p + u
 
 def part1(line):

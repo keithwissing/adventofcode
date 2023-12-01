@@ -85,7 +85,7 @@ def part2(lines):
     >>> part2(t1)
     29
     """
-    grid, distance, start, end = setup(lines)
+    grid, distance, _, end = setup(lines)
     heap = [(0, a) for a in grid.find('a')]
     heapq.heapify(heap)
     fill_distances(grid, distance, heap)

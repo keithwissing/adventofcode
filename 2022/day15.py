@@ -52,12 +52,16 @@ def is_outside(pos, sensors):
     return True
 
 def edges(pos, d):
+    # Yes, this can yield duplicates. I don't really care.
     x, y = pos
     for i in range(d + 1):
         yield x + i, y + d - i + 1
         yield x + i, y - d + i - 1
         yield x - i, y + d - i + 1
         yield x - i, y - d + i - 1
+
+def is_on_board(pos, limit):
+    return 0 <= pos[0] < limit and 0 <= pos[1] < limit
 
 def part2(lines):
     """
@@ -72,7 +76,7 @@ def part2(lines):
 
     for s in sensors:
         for pos in edges(s[0], s[2]):
-            if is_outside(pos, sensors):
+            if is_on_board(pos, limit) and is_outside(pos, sensors):
                 return pos[0] * limit + pos[1]
     return False
 

@@ -27,8 +27,7 @@ def print_grid(grid):
 def parse(lines):
     grid = defaultdict(lambda: '.')
     for line in lines:
-        cs = line.split(' -> ')
-        cs = [(int(x), int(y)) for i in cs for x, y in [i.split(',')]]
+        cs = [(int(x), int(y)) for i in line.split(' -> ') for x, y in [i.split(',')]]
         for src, dst in zip(cs[:-1], cs[1:]):
             delta = tuple(sign(b - a) for a, b in zip(src, dst))
             pos = src
@@ -91,7 +90,7 @@ def part2(lines):
     floor = max(y for x, y in grid.keys()) + 2
     while grid[(500, 0)] != 'o':
         add_sand_2(grid, floor)
-        
+
     return sum(1 for v in grid.values() if v == 'o')
 
 def main():

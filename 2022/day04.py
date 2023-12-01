@@ -43,7 +43,6 @@ def part2(lines):
 
 def main():
     puzzle_input = adventofcode.read_input(4)
-    # puzzle_input = [int(x) for x in puzzle_input]
     adventofcode.answer(1, 588, part1(puzzle_input))
     adventofcode.answer(2, 911, part2(puzzle_input))
 
