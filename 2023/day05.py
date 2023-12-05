@@ -62,13 +62,13 @@ def get_location(maps, seed):
         i = m[0]
         moved = False
         for t in m[1]:
+            if v < t[1]:
+                n = min(n, t[1] - v)
+            if v < t[1] + t[2]:  # This was not necessary for my input
+                n = min(n, t[1] + t[2] - v)
             if not moved and t[1] <= v < t[1] + t[2]:
                 v = v - t[1] + t[0]
                 moved = True
-            if v < t[1]:
-                n = min(n, t[1] - v)
-            if v < t[1] + t[2]:  # this was not necessary for my input, but I feel like it might be for other input
-                n = min(n, t[1] + t[2] - v)
     return v, n
 
 def part1(lines):
@@ -103,6 +103,8 @@ def main():
     puzzle_input = adventofcode.read_input(5)
     adventofcode.answer(1, 457535844, part1(puzzle_input))
     adventofcode.answer(2, 41222968, part2(puzzle_input))
+    puzzle_input = [line.rstrip('\n') for line in open("day05-input-nathan.txt")]
+    adventofcode.answer(2, 7873084, part2(puzzle_input))
 
 if __name__ == '__main__':
     import doctest
