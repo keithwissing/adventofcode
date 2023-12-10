@@ -77,7 +77,7 @@ def part2(lines):
     6
     """
     instr, network = parse(lines)
-    pos = [x for x in network.keys() if x.endswith('Z')]
+    pos = [x for x in network.keys() if x.endswith('A')]
     counts = [loop_size(p, instr, network) for p in pos]
     return lcm(*counts)
 
