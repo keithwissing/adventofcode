@@ -63,11 +63,13 @@ def add(a, b):
     return tuple(x + y for x, y in zip(a, b))
 
 con = {
-    (-1, 0): ('-LF', '-J7iS'),
-    (1, 0): ('-J7', '-LFS'),
-    (0, -1): ('|7F', '|LJS'),
-    (0, 1): ('|LJ', '|7FS')
+    (-1, 0): ('-LF', '-J7iS'),  # west
+    (0, -1): ('|7F', '|LJS'),  # north
+    (1, 0): ('-J7', '-LFS'),  # east
+    (0, 1): ('|LJ', '|7FS'),  # south
 }
+
+wnes = [(-1, 0), (0, -1), (1, 0), (0, 1)]
 
 def parse_grid(lines):
     grid = defaultdict(lambda: '.')
@@ -80,7 +82,7 @@ def parse_grid(lines):
 
 def find_pipe(grid, start):
     pipe = {start: 0}
-    checks = set([start])
+    checks = {start}
     while checks:
         pos = checks.pop()
         for d in con.keys():
@@ -103,51 +105,26 @@ def part1(lines):
     return max(pipe.values())
 
 def is_inside(pipe, w, h, x, y):
+    # a tile is inside if there is an odd number of pipe crossings in every direction
+
     if (x, y) in pipe:
         return False
 
     hor = [
-        [pipe.get((i, y), '.') for i in range(0, x)],
-        [pipe.get((i, y), '.') for i in range(x + 1, w)]
+        ('|', [pipe.get((i, y), '.') for i in range(0, x)]),
+        ('|', [pipe.get((i, y), '.') for i in range(x + 1, w)]),
+        ('-', [pipe.get((x, i), '.') for i in range(0, y)]),
+        ('-', [pipe.get((x, i), '.') for i in range(y + 1, h)]),
     ]
 
-    vert = [
-        [pipe.get((x, i), '.') for i in range(0, y)],
-        [pipe.get((x, i), '.') for i in range(y + 1, h)],
-    ]
-
-    for hh in hor:
-        cnt = Counter(hh)
-        test = cnt['|']
-        test += min(cnt['7'], cnt['L'])
-        test += min(cnt['J'], cnt['F'])
-        if test % 2 == 0:
-            return False
-
-    for vv in vert:
-        cnt = Counter(vv)
-        test = cnt['-']
-        test += min(cnt['7'], cnt['L'])
-        test += min(cnt['J'], cnt['F'])
-        if test % 2 == 0:
-            return False
-
-    return True
+    with_counts = [(x[0], Counter(x[1])) for x in hor]
+    tests = [c[x] + min(c['7'], c['L']) + min(c['J'], c['F']) for x, c in with_counts]
+    return not any(t % 2 == 0 for t in tests)
 
 def calc_s(p):
-    if p[0] in '-FL' and p[1] in '|F7':
-        return 'J'
-    if p[0] in '-FL' and p[2] in '-7J':
-        return '-'
-    if p[0] in '-FL' and p[3] in '|JL':
-        return '7'
-    if p[1] in '|F7' and p[2] in '-7J':
-        return 'L'
-    if p[1] in '|F7' and p[3] in '|JL':
-        return '|'
-    if p[2] in '-7J' and p[3] in '|JL':
-        return 'F'
-    raise Exception(p)
+    connections = [x[0] in con[x[1]][0] for x in zip(p, wnes)]
+    aaa = ''.join([str(i) for i, v in enumerate(connections) if v])
+    return {'01': 'J', '02': '-', '03': '7', '12': 'L', '13': '|', '23': 'F'}[aaa]
 
 def part2(lines):
     """
@@ -160,16 +137,11 @@ def part2(lines):
     """
     grid, start, w, h = parse_grid(lines)
     distances = find_pipe(grid, start)
-    pipe = defaultdict(lambda: '.')
-    for p in distances.keys():
-        pipe[p] = grid[p]
-        if pipe[p] == 'S':
-            pipe[p] = calc_s([grid.get(add(p, d), '.') for d in [(-1, 0), (0, -1), (1, 0), (0, 1)]])
-    sum = 0
-    for x, y in product(range(0, w), range(0, h)):
-        if is_inside(pipe, w, h, x, y):
-            sum += 1
-    return sum
+    pipe = defaultdict(lambda: '.', {
+        p: grid[p] if grid[p] != 'S' else calc_s([grid.get(add(p, d), '.') for d in wnes])
+        for p in distances.keys()
+    })
+    return sum(is_inside(pipe, w, h, x, y) for x, y in product(range(0, w), range(0, h)))
 
 def main():
     puzzle_input = adventofcode.read_input(10)
