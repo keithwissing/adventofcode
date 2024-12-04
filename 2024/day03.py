@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import itertools
 import re
+from functools import reduce
 
 import adventofcode
 
@@ -20,16 +22,18 @@ def part2(lines):
     48
     """
     matches = re.findall(r'mul\((\d+),(\d+)\)|(do)\(\)|do(n)\'t\(\)', lines)
-    total = 0
-    include = True
-    for a, b, d, n in matches:
-        if include and a and b:
-            total += int(a) * int(b)
-        if d:
-            include = True
-        if n:
-            include = False
-    return total
+    # total = 0
+    # include = True
+    # for a, b, d, n in matches:
+    #     if include and a and b:
+    #         total += int(a) * int(b)
+    #     include = (include or d) and not n
+    # return total
+    return reduce(
+        lambda a, v: (a[0] + (int(v[0]) * int(v[1]) if v[0] and a[1] else 0), (a[1] or v[2]) and not v[3]),
+        matches,
+        (0, True)
+    )[0]
 
 def main():
     puzzle_input = adventofcode.read_input(3)
