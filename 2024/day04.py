@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from collections import defaultdict
-from itertools import permutations, product
+from itertools import product
 
 import adventofcode
 
@@ -25,22 +25,17 @@ def part1(lines):
     >>> part1(t1)
     18
     """
+    deltas = [d for d in product([-1, 0, 1], [-1, 0, 1]) if d != [0, 0]]
+
     width, height = len(lines[0]), len(lines)
-    grid = defaultdict(lambda: '.', {(x, y): lines[y][x] for x in range(0, width) for y in range(0, height)})
+    grid = defaultdict(lambda: '.', {(x, y): lines[y][x] for x in range(width) for y in range(height)})
     total = 0
-    for y in range(0, height):
-        for x in range(0, width):
-            if grid[(x, y)] == 'X':
-                for delta in product([-1, 0, 1], [-1, 0, 1]):
-                    if delta == [0, 0]:
-                        continue
-                    pos = (x, y)
-                    val = ''
-                    for _ in range(4):
-                        val += grid[pos]
-                        pos = add(pos, delta)
-                    if val == 'XMAS':
-                        total += 1
+    for y, x in product(range(height), range(width)):
+        if grid[(x, y)] == 'X':
+            for delta in deltas:
+                val = ''.join(grid[(x + delta[0] * i, y + delta[1] * i)] for i in range(4))
+                if val == 'XMAS':
+                    total += 1
     return total
 
 def part2(lines):
@@ -49,15 +44,14 @@ def part2(lines):
     9
     """
     width, height = len(lines[0]), len(lines)
-    grid = defaultdict(lambda: '.', {(x, y): lines[y][x] for x in range(0, width) for y in range(0, height)})
+    grid = defaultdict(lambda: '.', {(x, y): lines[y][x] for x in range(width) for y in range(height)})
     total = 0
-    for y in range(0, height):
-        for x in range(0, width):
-            if grid[(x, y)] == 'A':
-                a = grid[add((x, y), (-1, -1))] + grid[add((x, y), (1, 1))]
-                b = grid[add((x, y), (-1, 1))] + grid[add((x, y), (1, -1))]
-                if all(t in ['MS', 'SM'] for t in [a, b]):
-                    total += 1
+    for y, x in product(range(height), range(width)):
+        if grid[(x, y)] == 'A':
+            a = grid[add((x, y), (-1, -1))] + grid[add((x, y), (1, 1))]
+            b = grid[add((x, y), (-1, 1))] + grid[add((x, y), (1, -1))]
+            if all(t in ['MS', 'SM'] for t in [a, b]):
+                total += 1
     return total
 
 def main():
