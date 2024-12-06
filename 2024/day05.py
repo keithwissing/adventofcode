@@ -46,7 +46,7 @@ def parse(lines):
 def find(t, v):
     return t.index(v) if v in t else None
 
-def invalid_rule(rules, update):
+def bad_position(rules, update):
     for rule in rules:
         pos = tuple(find(update, x) for x in rule)
         if not None in pos and pos[0] >= pos[1]:
@@ -54,14 +54,14 @@ def invalid_rule(rules, update):
     return None
 
 def valid_update(rules, update):
-    return invalid_rule(rules, update) is None
+    return bad_position(rules, update) is None
 
 def fixed_update(rules, update):
     fixed = list(update)
-    while bad := invalid_rule(rules, fixed):
+    while bad := bad_position(rules, fixed):
         temp = fixed[bad[0]]
-        fixed[bad[0]] = fixed[bad[1]]
-        fixed[bad[1]] = temp
+        del fixed[bad[0]]
+        fixed = fixed[:bad[1]] + [temp] + fixed[bad[1]:]
     return fixed
 
 def part1(lines):
