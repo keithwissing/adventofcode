@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 from collections import defaultdict
 
 import adventofcode
@@ -31,6 +32,9 @@ t3 = [
     'MMMISSJEEE',
 ]
 
+def debug(*args):
+    print(*args, file=sys.stderr)
+
 def find_region(grid):
     pos, crop = next(iter(grid.items()))
     perimeter = 0
@@ -49,8 +53,7 @@ def find_region(grid):
                     plots.add(neighbor)
                     q.append(neighbor)
 
-    for d in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
-        outside -= set(((p[0] + d[0], p[1] + d[1]), a) for p, a in outside)
+    outside -= set(((p[0] + d[0], p[1] + d[1]), a) for p, a in outside for d in [(1, 0), (0, 1)])
 
     return crop, plots, perimeter, len(outside)
 
@@ -61,21 +64,20 @@ def find_all_regions(lines):
     while grid:
         crop, plots, perimeter, sides = find_region(grid)
         grid = defaultdict(lambda: '', {k: v for k, v in grid.items() if k not in plots and v})
-        yield crop, plots, perimeter, sides
+        yield crop, len(plots), perimeter, sides
 
 def part1(lines):
     """
-    # >>> part1(t1)
-    # 140
-    #
-    # >>> part1(t2)
-    # 772
-    #
-    # >>> part1(t3)
-    # 1930
-    """
+    >>> part1(t1)
+    140
 
-    return sum(len(plots) * perimeter for _, plots, perimeter, _ in find_all_regions(lines))
+    >>> part1(t2)
+    772
+
+    >>> part1(t3)
+    1930
+    """
+    return sum(area * perimeter for _, area, perimeter, _ in find_all_regions(lines))
 
 def part2(lines):
     """
@@ -88,7 +90,7 @@ def part2(lines):
     >>> part2(t3)
     1206
     """
-    return sum(len(plots) * sides for _, plots, _, sides in find_all_regions(lines))
+    return sum(area * sides for _, area, _, sides in find_all_regions(lines))
 
 def main():
     puzzle_input = adventofcode.read_input(12)
