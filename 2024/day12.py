@@ -54,6 +54,15 @@ def find_region(grid):
 
     return crop, plots, perimeter, len(outside)
 
+def find_all_regions(lines):
+    width, height = len(lines[0]), len(lines)
+    grid = defaultdict(lambda: '', {(x, y): lines[y][x] for x in range(width) for y in range(height)})
+
+    while grid:
+        crop, plots, perimeter, sides = find_region(grid)
+        grid = defaultdict(lambda: '', {k: v for k, v in grid.items() if k not in plots and v})
+        yield crop, plots, perimeter, sides
+
 def part1(lines):
     """
     # >>> part1(t1)
@@ -65,15 +74,8 @@ def part1(lines):
     # >>> part1(t3)
     # 1930
     """
-    width, height = len(lines[0]), len(lines)
-    grid = defaultdict(lambda: '', {(x, y): lines[y][x] for x in range(width) for y in range(height)})
 
-    cost = 0
-    while grid:
-        _, plots, perimeter, _ = find_region(grid)
-        cost += len(plots) * perimeter
-        grid = defaultdict(lambda: '', {k: v for k, v in grid.items() if k not in plots and v})
-    return cost
+    return sum(len(plots) * perimeter for _, plots, perimeter, _ in find_all_regions(lines))
 
 def part2(lines):
     """
@@ -86,15 +88,7 @@ def part2(lines):
     >>> part2(t3)
     1206
     """
-    width, height = len(lines[0]), len(lines)
-    grid = defaultdict(lambda: '', {(x, y): lines[y][x] for x in range(width) for y in range(height)})
-
-    cost = 0
-    while grid:
-        _, plots, _, sides = find_region(grid)
-        cost += len(plots) * sides
-        grid = defaultdict(lambda: '', {k: v for k, v in grid.items() if k not in plots and v})
-    return cost
+    return sum(len(plots) * sides for _, plots, _, sides in find_all_regions(lines))
 
 def main():
     puzzle_input = adventofcode.read_input(12)
