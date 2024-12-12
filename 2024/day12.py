@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+from collections import defaultdict
+
+import adventofcode
+
+t1 = [
+    'AAAA',
+    'BBCD',
+    'BBCC',
+    'EEEC',
+]
+
+t2 = [
+    'OOOOO',
+    'OXOXO',
+    'OOOOO',
+    'OXOXO',
+    'OOOOO',
+]
+
+t3 = [
+    'RRRRIICCFF',
+    'RRRRIICCCF',
+    'VVRRRCCFFF',
+    'VVRCCCJFFF',
+    'VVVVCJJCFE',
+    'VVIVCCJJEE',
+    'VVIIICJJEE',
+    'MIIIIIJJEE',
+    'MIIISIJEEE',
+    'MMMISSJEEE',
+]
+
+def find_region(grid):
+    pos, crop = next(iter(grid.items()))
+    perimeter = 0
+    plots = {pos}
+    outside = set()
+    q = [pos]
+    while q:
+        pos = q.pop()
+        for d in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
+            neighbor = (pos[0] + d[0], pos[1] + d[1])
+            if grid[neighbor] != crop:
+                perimeter += 1
+                outside.add((neighbor, d))
+            else:
+                if neighbor not in plots:
+                    plots.add(neighbor)
+                    q.append(neighbor)
+
+    for d in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
+        outside -= set(((p[0] + d[0], p[1] + d[1]), a) for p, a in outside)
+
+    return crop, plots, perimeter, len(outside)
+
+def part1(lines):
+    """
+    # >>> part1(t1)
+    # 140
+    #
+    # >>> part1(t2)
+    # 772
+    #
+    # >>> part1(t3)
+    # 1930
+    """
+    width, height = len(lines[0]), len(lines)
+    grid = defaultdict(lambda: '', {(x, y): lines[y][x] for x in range(width) for y in range(height)})
+
+    cost = 0
+    while grid:
+        _, plots, perimeter, _ = find_region(grid)
+        cost += len(plots) * perimeter
+        grid = defaultdict(lambda: '', {k: v for k, v in grid.items() if k not in plots and v})
+    return cost
+
+def part2(lines):
+    """
+    >>> part2(t1)
+    80
+
+    >>> part2(t2)
+    436
+
+    >>> part2(t3)
+    1206
+    """
+    width, height = len(lines[0]), len(lines)
+    grid = defaultdict(lambda: '', {(x, y): lines[y][x] for x in range(width) for y in range(height)})
+
+    cost = 0
+    while grid:
+        _, plots, _, sides = find_region(grid)
+        cost += len(plots) * sides
+        grid = defaultdict(lambda: '', {k: v for k, v in grid.items() if k not in plots and v})
+    return cost
+
+def main():
+    puzzle_input = adventofcode.read_input(12)
+    adventofcode.answer(1, 1477924, part1(puzzle_input))
+    adventofcode.answer(2, 841934, part2(puzzle_input))
+
+if __name__ == '__main__':
+    import doctest
+
+    doctest.testmod()
+    main()

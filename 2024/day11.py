@@ -42,7 +42,8 @@ def nblink(v, n):
 
 def part2(line):
     """
-    # >>> part2(t1)
+    >>> part2(t1)
+    65601038650482
     """
     return sum(nblink(int(v), 75) for v in line.split())
 
